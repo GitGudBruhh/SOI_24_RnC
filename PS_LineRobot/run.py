@@ -33,7 +33,7 @@ class Robot:
         self.current_pos = np.array(start_pos, dtype='float64')
         self.angle = angle
 
-        self.direction_unit_vec = create_rot_matrix(angle) @ np.array([0, 1])
+        self.direction_unit_vec = create_rot_matrix(angle) @ np.array([1, 0])
 
         corner_0_offset = create_rot_matrix(angle + self.corner_angle) @ (self.half_diag_length * np.array([0, 1]))
         corner_1_offset = create_rot_matrix(angle - self.corner_angle) @ (self.half_diag_length * np.array([0, 1]))
@@ -103,3 +103,92 @@ class Robot:
 
     def set_ang_vel(self, ang_vel: float):
         self.current_angular_velocity = ang_vel
+
+########################################################################################################
+# Pygame implementation of environment
+# Create map as string
+# Can get map from files as string
+
+map = '''O#####O######
+O#####O######
+O#OOOOOOOO###
+OOO######O###
+O####S##GO###
+'''
+
+# Convert string to rows of strings for easier iteration and position access
+map_array = map.split('\n')
+#########################################################################################################
+import pygame
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+strip_width = 30
+
+# Determine the start pos of maze
+start_pos = (0, 0)
+for row in map_array:
+    if 'S' in row:
+        start_pos = np.array([row.index('S'), map_array.index(row)])
+        print(start_pos)
+
+#This variable is used because pygame draws by default starting from the top left corner
+path_offset = np.array([strip_width/2 - 2, strip_width/2]) #Used once to center the robot onto the path at the start
+
+# Create the robot object (Dimensions, start position, Direction facing (Standard unit circle))
+my_rob = Robot((40, 40), strip_width*start_pos + path_offset, np.pi/2)
+my_rob.set_speed(0)
+my_rob.set_ang_vel(-np.pi)
+
+pygame.init()
+pygame.font.init()
+my_font = pygame.font.SysFont('Roboto', 30)
+
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+running = True
+
+# Load the sprite for wheels
+rob_image = pygame.image.load('black.jpg')
+rob_image = pygame.transform.scale(rob_image, (5, 5))
+
+# Variables used to keep track of ticks
+time_start = 0
+time_end = 0
+while running:
+    time_start = time_end
+    time_end = pygame.time.get_ticks()
+    text_surface = my_font.render(str(pygame.time.get_ticks()), False, (0, 0, 0)) # Surface used to print time onto screen
+
+    # Update the position and angle of robot each time interval
+    my_rob.update_pos((time_end - time_start)/1000)
+    my_rob.update_angle((time_end - time_start)/1000)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill((255, 255, 255)) #Fill background as white
+
+    # Choosing j, i (position of maze block) and filling it in if it's a strip
+    for j in range(len(map_array)):
+        row = map_array[j]
+        for i in range(len(row)):
+            block_pos = (i*strip_width, j*strip_width) #Get block position
+            if row[i] == 'O':
+                pygame.draw.rect(screen, (100, 100, 100), block_pos + (strip_width, strip_width)) #Draw the path at block_pos
+            elif row[i] == 'S':
+                pygame.draw.rect(screen, (200, 200, 0), block_pos + (strip_width, strip_width))
+            elif row[i] == 'G':
+                pygame.draw.rect(screen, (0, 200, 0), block_pos + (strip_width, strip_width))
+
+    # Draw the four corners and an additional front for the robot for easier visibility
+    screen.blit(rob_image, my_rob.corners[0])
+    screen.blit(rob_image, my_rob.corners[1])
+    screen.blit(rob_image, my_rob.corners[2])
+    screen.blit(rob_image, my_rob.corners[3])
+    screen.blit(rob_image, my_rob.current_pos)
+    screen.blit(rob_image, my_rob.current_pos + 30*my_rob.direction_unit_vec)
+    screen.blit(text_surface, (500,0))
+    pygame.display.flip()
+
+pygame.quit()
