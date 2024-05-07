@@ -1,79 +1,105 @@
 import numpy as np
-import env
+import time
 
-#Design a robot 
-#Here I am taking a two wheeled robot with the motors at the centre --> easy rotation
-class LineFollower:
+def create_rot_matrix(angle: float):
+    return np.array([[np.cos(angle), np.sin(angle)],
+                    [-np.sin(angle), np.cos(angle)]])
+
+class Robot:
     length = None
     width = None
+    corner_angle = None
+    half_diag_length = None
 
-    wheel_radius = 0.0
-    wheel_circumference = 0.0
-    max_motor_speed = None
+    current_pos = None
+    current_speed = None
+    current_angular_velocity = None
+    sensor_vals = None
 
-    current_left_motor_speed = 0
-    current_right_motor_speed = 0
+    angle = None
+    direction_unit_vec = None
 
-    current_linear_velocity = 0
-    current_angular_velocity = 0
+    corners = None
+    corner_offsets = None
 
-    no_of_rotations = 0
+    def __init__(self, dimensions: tuple, start_pos: tuple, angle: float):
+        self.width = dimensions[0]
+        self.length = dimensions[1]
+        self.current_speed = 0
+        self.current_angular_velocity = 0
+        self.corner_angle = np.arctan(self.width/self.length)
+        self.half_diag_length = np.linalg.norm([self.width/2, self.length/2])
 
-    current_position = np.zeros((1,2))
-    current_orientation = np.zeros((1,2)) # {0,1} for north, {1,0} east {-1,0 } west and {0,-1} for south
-    def __init__(self,dimensions, wheel_radius, max_motor_speed , start_coordinates,start_orientation) -> None :
-        self.length = dimensions[0]
-        self.width = dimensions[1]
+        self.current_pos = np.array(start_pos, dtype='float64')
+        self.angle = angle
 
-        self.max_motor_speed = max_motor_speed 
-        self.wheel_radius = wheel_radius
-        self.wheel_circumference = 2*(22.0/7)*wheel_radius
-        current_position = start_coordinates
-        current_orientation = start_orientation
+        self.direction_unit_vec = create_rot_matrix(angle) @ np.array([0, 1])
 
-    def calc_robot_speed(self):
-        if self.current_left_motor_speed + self.current_right_motor_speed == 0:
-            self.current_linear_velocity = 0
-            self.current_angular_velocity = (self.current_left_motor_speed*self.wheel_circumference)/self.wheel_radius
-        elif self.current_left_motor_speed == self.current_right_motor_speed:
-            self.current_linear_velocity = self.current_left_motor_speed*self.wheel_circumference
-        else:
-            print("Havent Done Yet =_=")
+        corner_0_offset = create_rot_matrix(angle + self.corner_angle) @ (self.half_diag_length * np.array([0, 1]))
+        corner_1_offset = create_rot_matrix(angle - self.corner_angle) @ (self.half_diag_length * np.array([0, 1]))
+        self.corner_offsets = np.array([corner_0_offset, corner_1_offset])
 
-        
-    def get_motor_speed(self) -> None:
-        self.current_left_motor_speed = 10 #env.get_left_motor_speed() The values that need to be got from the environment
-        self.current_right_motor_speed = 10#env.get_right_motor_speed()
-    
-    def rotate_cw(self, motor_speed):
+        self.corners = np.zeros((4, 2))
+        self.corners[0] = self.current_pos + self.corner_offsets[0]
+        self.corners[1] = self.current_pos + self.corner_offsets[1]
+        self.corners[2] = self.current_pos - self.corner_offsets[0]
+        self.corners[3] = self.current_pos - self.corner_offsets[1]
 
-        #define physics 
-        env.set_left_motor_speed(motor_speed)
-        env.set_right_motor_speed(-motor_speed)
-        self.get_motor_speed()
-
-    
-
-    def rotate_ccw(self,motor_speed):
-        #define physics 
-        env.set_left_motor_speed(-motor_speed)
-        env.set_right_motor_speed(motor_speed)
-        self.get_motor_speed()
-
-    def calculate_position(self):
-        
-        distance_travelled = self.no_of_rotations*self.wheel_radius
-        self.current_position += distance_travelled*self.current_orientation
-
-    def calculate_orientation(self,angle):
-        theta = np.radians(angle)
-        c, s = np.cos(theta), np.sin(theta)
-        R = np.array(((c,-s),(s,c)))
-        self.current_orientation = np.dot(self.current_orientation,R)
-    
-    
+        ################################################
+        #      Direction unit vector                   #
+        #        X                                     #
+        #        |                                     #
+        #        |                                     #
+        #   X,---|---,X Corner Offsets                 #
+        #    |\  |  /|                                 #
+        #    | \ | / |                                 #
+        #    |  \|/  |                                 #
+        #    |   O   |  Length                         #
+        #    |  pos  |                                 #
+        #    |       |                 ^ Y             #
+        #    |       |                 |               #
+        #    `-------'                 |               #
+        #      Width                   '-----> X       #
+        ################################################
 
 
+    # Helper functions
+    # DO NOT TOUCH THESE
+    def rotate(self, rot_angle: float):
+        self.direction_unit_vec = create_rot_matrix(rot_angle) @ self.direction_unit_vec
+        self.corner_offsets[0] = create_rot_matrix(rot_angle) @ self.corner_offsets[0]
+        self.corner_offsets[1] = create_rot_matrix(rot_angle) @ self.corner_offsets[1]
 
+        self.corners[0] = self.current_pos + self.corner_offsets[0]
+        self.corners[1] = self.current_pos + self.corner_offsets[1]
+        self.corners[2] = self.current_pos - self.corner_offsets[0]
+        self.corners[3] = self.current_pos - self.corner_offsets[1]
 
+    def move(self, displacement: float):
+        self.current_pos += displacement
+        for idx in range(4):
+            self.corners[idx] += displacement
 
+    # Access functions
+    # You only ever have to use these functions to update the robots condition
+    def update_angle(self, time_elapsed: float):
+        self.rotate(self.current_angular_velocity * time_elapsed)
+
+    def update_pos(self, time_elapsed: float):
+        displacement = self.direction_unit_vec * self.current_speed * time_elapsed
+        self.move(displacement)
+
+    def get_speed(self):
+        return self.current_speed
+
+    def get_ang_vel(self):
+        return self.current_angular_velocity
+
+    def get_sensor_vals(self):
+        return self.sensor_val
+
+    def set_speed(self, speed: float):
+        self.current_speed = speed
+
+    def set_ang_vel(self, ang_vel: float):
+        self.current_angular_velocity = ang_vel
