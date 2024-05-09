@@ -59,3 +59,22 @@ class RobotData:
 
     def get_ang_vel(self):
         return self.current_angular_velocity
+    
+
+class Motor:
+
+    def __init__(self):
+        self._rpm : int = 0
+
+    @property
+    def rpm(self):
+        return self._rpm
+    
+    @rpm.setter
+    def rpm(self, value : int):
+        if (type(value) == int):
+            self._rpm = value
+            if (value > MOTOR_MAX_SPEED):    
+                self._rpm = MOTOR_MAX_SPEED 
+        else:
+            raise(f"RPM can only be a integer. It was tried to be set to {value} which is of type {type(value)}")
