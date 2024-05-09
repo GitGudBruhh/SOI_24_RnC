@@ -1,4 +1,6 @@
 import numpy as np
+import pygame
+
 import time
 
 def create_rot_matrix(angle: float):
@@ -14,7 +16,7 @@ class Robot:
     current_pos = None
     current_speed = None
     current_angular_velocity = None
-    sensor_vals = None
+    sensor_vals = [0,0]
 
     angle = None
     direction_unit_vec = None
@@ -95,8 +97,33 @@ class Robot:
     def get_ang_vel(self):
         return self.current_angular_velocity
 
-    def get_sensor_vals(self):
-        return self.sensor_val
+    def get_sensor_vals(self, screen: pygame.surface.Surface):
+        '''
+        reads the IR sensor and return a list
+        SHOULD BE USED BEFORE UPDATING THE ROBOT ON SCREEN
+
+
+        sensor_vals[0] -> left sensor
+        sensor_vals[1] -> right sensor
+        (assuming corners[0] is front left corner)
+
+        '''
+        colour1 = screen.get_at((int(self.corners[0][0]), int(self.corners[0][1])))
+        colour1_gs = (colour1[0] + colour1[1] + colour1[2]) / 3
+        colour2 = screen.get_at((int(self.corners[1][0]), int(self.corners[1][1])))
+        colour2_gs = (colour2[0] + colour2[1] + colour2[2]) / 3
+        if (colour1_gs < 150):
+            self.sensor_vals[0] = 0
+        else:
+            self.sensor_vals[0] = 1
+        if (colour2_gs < 150):
+            self.sensor_vals[1] = 0
+        else:
+            self.sensor_vals[1] = 1
+
+        #print(self.sensor_vals)
+
+        return self.sensor_vals
 
     def set_speed(self, speed: float):
         self.current_speed = speed
@@ -119,7 +146,6 @@ O####S##GO###
 # Convert string to rows of strings for easier iteration and position access
 map_array = map.split('\n')
 #########################################################################################################
-import pygame
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -182,6 +208,7 @@ while running:
                 pygame.draw.rect(screen, (0, 200, 0), block_pos + (strip_width, strip_width))
 
     # Draw the four corners and an additional front for the robot for easier visibility
+    my_rob.get_sensor_vals(screen)
     screen.blit(rob_image, my_rob.corners[0])
     screen.blit(rob_image, my_rob.corners[1])
     screen.blit(rob_image, my_rob.corners[2])
