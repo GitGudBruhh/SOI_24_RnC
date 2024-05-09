@@ -3,7 +3,8 @@
 
 MOTOR_MAX_SPEED = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s
 WHEEL_RADIUS = 2.5 #i n cm
-ACCELERATION = 0.5 # per tick
+ACCELERATION = 1 # pixel per tick
+ANGULAR_ACCELERATION = 0.01 # per tick
 class RobotData:
     '''
     - motor1speed: float IN
@@ -16,6 +17,11 @@ class RobotData:
     is_accel = False
     new_speed = None
     current_speed = 0
+
+    is_ang_decel = False
+    is_ang_accel = False
+    new_ang_vel = None
+    current_angular_velocity = 0
 
     def __init__(self, speed, ang_vel):
         self.current_speed = speed
@@ -33,6 +39,16 @@ class RobotData:
             self.is_decel = True
             self.new_speed = speed
 
+    def set_ang_vel(self, ang_vel):
+        if(self.current_angular_velocity <= ang_vel):
+            self.is_ang_accel = True
+            self.is_ang_decel = False
+            self.new_ang_vel = ang_vel
+        else:
+            self.is_ang_accel = False
+            self.is_ang_decel = True
+            self.new_ang_vel = ang_vel
+
     def accel_decel(self, ticks_elapsed):
         if(self.is_accel):
             if(self.current_speed >= self.new_speed):
@@ -47,11 +63,22 @@ class RobotData:
                 self.new_speed = None
                 self.is_decel = False
             else:
-                self.current_speed += -ACCELERATION * ticks_elapsed
+                self.current_speed -= ACCELERATION * ticks_elapsed
 
-
-    def set_ang_vel(self, ang_vel):
-        self.current_angular_velocity = ang_vel
+        if(self.is_ang_accel):
+            if(self.current_angular_velocity >= self.new_ang_vel):
+                self.current_angular_velocity = self.new_ang_vel
+                self.new_ang_vel = None
+                self.is_ang_accel = False
+            else:
+                self.current_angular_velocity += ANGULAR_ACCELERATION * ticks_elapsed
+        if(self.is_ang_decel):
+            if(self.current_angular_velocity <= self.new_ang_vel):
+                self.current_angular_velocity = self.new_ang_vel
+                self.new_ang_vel = None
+                self.is_ang_decel = False
+            else:
+                self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
     #############################################
 
     def get_speed(self):
