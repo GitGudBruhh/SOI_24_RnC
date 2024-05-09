@@ -4,7 +4,7 @@
 MOTOR_MAX_SPEED = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s
 WHEEL_RADIUS = 2.5 #i n cm
 ACCELERATION = 1 # pixel per tick
-ANGULAR_ACCELERATION = 200 # per tick
+ANGULAR_ACCELERATION = 0.01 # per tick
 class RobotData:
     '''
     - motor1speed: float IN

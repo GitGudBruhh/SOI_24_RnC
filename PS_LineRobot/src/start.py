@@ -1,5 +1,5 @@
-import pygame
 import numpy as np
+import pygame
 from robot import *
 from robotdata import *
 from mazemap import *
@@ -26,7 +26,7 @@ path_offset = np.array([strip_width/2, strip_width/2])
 
 # Create the robot object (Dimensions, start position, Direction facing)
 my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, np.pi/2)
-robot_interface = RobotData(0, 1)
+robot_interface = RobotData(0, 10)
 
 # Initialize the pygame objects and screen
 pygame.init()
@@ -55,8 +55,11 @@ while running:
     screen.blit(text_surface, (300,0))
     txt_s = my_font.render("Speed: " + str(my_rob.current_speed), False, (0, 0, 0))
     screen.blit(txt_s, (600,0))
-    txt_s = my_font.render("Sensor vals: " + str(my_rob.sensor_vals), False, (0, 0, 0))
+    txt_s = my_font.render("Angular velocity: " + str(my_rob.current_angular_velocity), False, (0, 0, 0))
     screen.blit(txt_s, (800,0))
+    txt_s = my_font.render("Sensor vals: " + str(my_rob.sensor_vals), False, (0, 0, 0))
+    screen.blit(txt_s, (1100,0))
+
 
     my_rob.set_speed(robot_interface.get_speed())
     my_rob.set_ang_vel(robot_interface.get_ang_vel())
@@ -83,11 +86,9 @@ while running:
 
     # DEBUG ##################################################
     s_vals = my_rob.get_sensor_vals(screen)
-    if(s_vals[0] == 0 or s_vals[1] == 0):
-        if(robot_interface.get_ang_vel == 1):
-            robot_interface.set_ang_vel(-1)
-        if(robot_interface.get_ang_vel == -1):
-            robot_interface.set_ang_vel(1)
+    if(s_vals[0] == 0):
+        if(robot_interface.get_ang_vel() == 10):
+            robot_interface.set_ang_vel(0)
 
     robot_interface.accel_decel(time_end - time_start)
     # END DEBUG #################################################
