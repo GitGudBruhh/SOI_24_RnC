@@ -4,8 +4,8 @@ from robot import *
 from robotdata import *
 from mazemap import *
 
-SCREEN_WIDTH = 1800
-SCREEN_HEIGHT = 1200
+SCREEN_WIDTH = 1400 
+SCREEN_HEIGHT = 780
 strip_width = 15 #1.5cm
 
 ROBOT_WIDTH = 80 #8cm
@@ -33,6 +33,8 @@ pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Roboto', 30)
 
+clock = pygame.time.Clock()
+
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 running = True
 
@@ -44,12 +46,10 @@ rob_image_wheel = pygame.transform.scale(rob_image, (10, 50))
 # Time start and time end keep track of time elapsed in a loop
 # Used for rendering time onto screen
 # Also used for movement of robot
-time_start = 0
-time_end = 0
 while running:
     screen.fill((200, 200, 200)) #Fill background
-    time_start = time_end
-    time_end = pygame.time.get_ticks()
+
+    elapsed_time = clock.get_time()
 
     text_surface = my_font.render("Time elapsed: " + str(pygame.time.get_ticks()), False, (0, 0, 0))
     screen.blit(text_surface, (300,0))
@@ -63,8 +63,8 @@ while running:
 
     my_rob.set_speed(robot_interface.get_speed())
     my_rob.set_ang_vel(robot_interface.get_ang_vel())
-    my_rob.update_pos((time_end - time_start)/1000)
-    my_rob.update_angle((time_end - time_start)/1000)
+    my_rob.update_pos(elapsed_time/1000)
+    my_rob.update_angle(elapsed_time/1000)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -90,7 +90,7 @@ while running:
         if(robot_interface.get_ang_vel() == 10):
             robot_interface.set_ang_vel(0)
 
-    robot_interface.accel_decel(time_end - time_start)
+    robot_interface.accel_decel(elapsed_time)
     # END DEBUG #################################################
 
     pygame.draw.polygon(screen, (0, 0, 255), my_rob.corners, width=3)
@@ -104,5 +104,8 @@ while running:
     pygame.draw.circle(screen, (255, 0, 0), my_rob.current_pos, 3)
     pygame.draw.circle(screen, (0, 0, 0), my_rob.current_pos + 30*my_rob.direction_unit_vec, 3)
     pygame.display.flip()
+
+    pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
+    clock.tick(60)
 
 pygame.quit()
