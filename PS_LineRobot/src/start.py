@@ -26,7 +26,7 @@ path_offset = np.array([strip_width/2 - 2, strip_width/2])
 
 # Create the robot object (Dimensions, start position, Direction facing)
 my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, np.pi/2)
-robot_interface = RobotData(0, 0)
+robot_interface = RobotData(100, 0)
 
 # Initialize the pygame objects and screen
 pygame.init()
@@ -75,6 +75,11 @@ while running:
                 pygame.draw.rect(screen, (0, 200, 0), block_pos + (strip_width, strip_width)) # Draw goal state
 
     # TWO WHEELED ROBOT
+    s_vals = my_rob.get_sensor_vals(screen)
+    if(s_vals[0] == 0 and s_vals[1] == 0):
+        robot_interface.set_speed(0)
+    robot_interface.accel_decel(time_end - time_start)
+
     screen.blit(rob_image_point, my_rob.corners[0])
     screen.blit(rob_image_point, my_rob.corners[1])
     screen.blit(rob_image_point, my_rob.corners[2])
