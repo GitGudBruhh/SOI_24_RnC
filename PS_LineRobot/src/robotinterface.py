@@ -7,7 +7,7 @@ import numpy as np
 MOTOR_MAX_RPM = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s, which corresponds to 15.7 cm/s
 WHEEL_RADIUS = 25 #in px, 2.5 in cm
 ACCELERATION = 1 # pixel per tick
-ANGULAR_ACCELERATION = 0.01 # per tick
+ANGULAR_ACCELERATION = 1 # per tick
 
 class Motor:
     duty_cycle = 0
@@ -85,31 +85,34 @@ class RobotInterface:
     new_ang_vel = None
     current_angular_velocity = 0
 
+    prev_signals = None
+
     def __init__(self, signals, dimensions: tuple):
         m_left = Motor(0, signals[0][0], signals[0][1], signals[0][2])
         m_right = Motor(1, signals[1][0], signals[1][1], signals[1][2])
         self.motors = [m_left, m_right]
         self.width = dimensions[1]
         self.length = dimensions[0]
+        self.prev_signals = signals
 
     ############################################
     # DONT TOUCH THESE WHILE NOT DEBUGGING
     def set_speed(self, speed):
-        ############### !!!!!!!!!!! #####################
-        # if(self.current_speed <= speed):
-        #     self.is_accel = True
-        #     self.is_decel = False
-        #     self.new_speed = speed
-        # else:
-        #     self.is_accel = False
-        #     self.is_decel = True
-        #     self.new_speed = speed
-        ############### !!!!!!!!!!! #####################
+        ############## !!!!!!!!!!! #####################
+        if(self.current_speed <= speed):
+            self.is_accel = True
+            self.is_decel = False
+            self.new_speed = speed
+        else:
+            self.is_accel = False
+            self.is_decel = True
+            self.new_speed = speed
+        ############## !!!!!!!!!!! #####################
 
-        self.current_speed = speed
+        # self.current_speed = speed
 
     def set_ang_vel(self, ang_vel):
-        ############### !!!!!!!!!!! #####################
+        ############## !!!!!!!!!!! #####################
         # if(self.current_angular_velocity <= ang_vel):
         #     self.is_ang_accel = True
         #     self.is_ang_decel = False
@@ -118,47 +121,69 @@ class RobotInterface:
         #     self.is_ang_accel = False
         #     self.is_ang_decel = True
         #     self.new_ang_vel = ang_vel
-        ############### !!!!!!!!!!! #####################
+        ############## !!!!!!!!!!! #####################
 
         self.current_angular_velocity = ang_vel
 
-    # def accel_decel(self, ticks_elapsed):
-    #     if(self.is_accel):
-    #         if(self.current_speed >= self.new_speed):
-    #             self.current_speed = self.new_speed
-    #             self.new_speed = None
-    #             self.is_accel = False
-    #         else:
-    #             self.current_speed += ACCELERATION * ticks_elapsed
-    #     if(self.is_decel):
-    #         if(self.current_speed <= self.new_speed):
-    #             self.current_speed = self.new_speed
-    #             self.new_speed = None
-    #             self.is_decel = False
-    #         else:
-    #             self.current_speed -= ACCELERATION * ticks_elapsed
-    #
-    #     if(self.is_ang_accel):
-    #         if(self.current_angular_velocity >= self.new_ang_vel):
-    #             self.current_angular_velocity = self.new_ang_vel
-    #             self.new_ang_vel = None
-    #             self.is_ang_accel = False
-    #         else:
-    #             self.current_angular_velocity += ANGULAR_ACCELERATION * ticks_elapsed
-    #     if(self.is_ang_decel):
-    #         if(self.current_angular_velocity <= self.new_ang_vel):
-    #             self.current_angular_velocity = self.new_ang_vel
-    #             self.new_ang_vel = None
-    #             self.is_ang_decel = False
-    #         else:
-    #             self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
-    #############################################
+    def accel_decel(self, ticks_elapsed):
+        if(self.is_accel):
+            if(self.current_speed >= self.new_speed):
+                self.current_speed = self.new_speed
+                self.new_speed = None
+                self.is_accel = False
+                self.is_decel = False
+                print("FIN_ACCEL")
+                # print("NEW SPEEEED" + self.new_speed)
 
-    def update_signals(self, signals):
-        self.motors[0].write_motor_pins(signals[0][0], signals[0][1], signals[0][2])
-        self.motors[1].write_motor_pins(signals[1][0], signals[1][1], signals[1][2])
-        self.set_speed((self.motors[0].wheel_speed + self.motors[1].wheel_speed)/2)
-        self.set_ang_vel((self.motors[1].wheel_angular_speed - self.motors[0].wheel_angular_speed)/self.width)
+            else:
+                self.current_speed += ACCELERATION * ticks_elapsed
+                print("IS_ACCEL")
+                # print("NEW SPEEEED",self.new_speed)
+        if(self.is_decel):
+            if(self.current_speed <= self.new_speed):
+                self.current_speed = self.new_speed
+                self.new_speed = None
+                self.is_decel = False
+                self.is_accel = False
+                print("FIN_DECEL")
+                # print("NEW SPEEEED" + self.new_speed)
+
+            else:
+                self.current_speed -= ACCELERATION * ticks_elapsed
+                print("IS_DECEL")
+
+        if(self.is_ang_accel):
+            if(self.current_angular_velocity >= self.new_ang_vel):
+                self.current_angular_velocity = self.new_ang_vel
+                self.new_ang_vel = None
+                self.is_ang_accel = False
+                print("FIN_ANG_ACCEL")
+                # print("NEW SPEEEED" + self.new_speed)
+
+            else:
+                self.current_angular_velocity += ANGULAR_ACCELERATION * ticks_elapsed
+                print("IS_ANG_ACCEL")
+
+        if(self.is_ang_decel):
+            if(self.current_angular_velocity <= self.new_ang_vel):
+                self.current_angular_velocity = self.new_ang_vel
+                self.new_ang_vel = None
+                self.is_ang_decel = False
+                print("FIN_ANG_DECEL")
+                # print("NEW SPEEEED" + self.new_speed)
+
+            else:
+                self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
+                print("IS_ANG_ACCEL")
+    ############################################
+
+    def update_signals(self, signals: tuple):
+        if(signals != self.prev_signals):
+            self.motors[0].write_motor_pins(signals[0][0], signals[0][1], signals[0][2])
+            self.motors[1].write_motor_pins(signals[1][0], signals[1][1], signals[1][2])
+            self.set_speed((self.motors[0].wheel_speed + self.motors[1].wheel_speed)/2)
+            self.set_ang_vel((self.motors[1].wheel_angular_speed - self.motors[0].wheel_angular_speed)/self.width)
+            self.prev_signals = signals
 
     def get_speed(self):
         return self.current_speed
