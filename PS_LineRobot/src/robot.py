@@ -26,8 +26,7 @@ class Robot:
     def __init__(self, dimensions: tuple, start_pos: tuple, angle: float):
         self.width = dimensions[1]
         self.length = dimensions[0]
-        self.current_speed = 0
-        self.current_angular_velocity = 0
+
         self.corner_angle = np.arctan(self.width/self.length) #TThis is the angle b/w direction vector and centre->corner vector
         self.half_diag_length = np.linalg.norm([self.width/2, self.length/2]) #Half diagonal length is useful in calculations
 
@@ -91,9 +90,12 @@ class Robot:
         self.wheel_pos[0] += displacement
         self.wheel_pos[1] += displacement
 
-    # Access functions
+    # Emulator functions
     # You only ever have to use these functions to update the robots condition inside the emulator
+    # The function parameters are taken from the robot interface
+    # The robot interface preprocesses the data to provide speed values
     # DO NOT LET PARTICIPANTS DIRECTLY ACCESS THESE
+
     def update_angle(self, time_elapsed: float):
         self.rotate(self.current_angular_velocity * time_elapsed)
 

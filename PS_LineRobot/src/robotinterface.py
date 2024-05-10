@@ -1,11 +1,70 @@
+import numpy as np
+
 # This class will be used by the participants to exchange data with the emulator
 # The signal setter functions need to be changed to use the motor speed values
+# This class helps
 
-MOTOR_MAX_SPEED = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s
-WHEEL_RADIUS = 2.5 #i n cm
+class Motor:
+    duty_cycle = 0
+    rpm = 0
+    wheel_speed = 0
+    wheel_angular_speed = 0
+    in1 = False
+    in2 = False
+
+    def __init__(self, position: int, d_cycle: int, IN1_PIN_val: bool, IN2_PIN_val: bool):
+        self._rpm : int = 0
+        self.position = position # LEFT = 0, RIGHT = 1
+        self.write_motor_pins(d_cycle, IN1_PIN_val, IN2_PIN_val)
+
+#     @property
+#     def rpm(self):
+#         return self._rpm
+#
+#     @rpm.setter
+#     def rpm(self, value : int):
+#         if (type(value) == int):
+#             self._rpm = value
+#             if (value > MOTOR_MAX_RPM):
+#                 self._rpm = MOTOR_MAX_RPM
+#         else:
+#             raise(f"RPM can only be a integer. It was tried to be set to {value} which is of type {type(value)}")
+
+    def set_direction_pin_vals(self, IN1_PIN_val: bool, IN2_PIN_val: bool):
+        self.in1 = IN1_PIN_val
+        self.in2 = IN2_PIN_val
+
+        if(self.in1 == self.in2):
+            self.direction = 0
+        elif(self.in1):
+            if(self.position == 0):
+                self.direction = -1
+            else:
+                self.direction = 1
+        elif(self.in2):
+            if(self.position == 0):
+                self.direction = 1
+            else:
+                self.direction = -1
+
+    def set_duty_cycle(self, d_cycle: int):
+        # 0 -> 255 :: 0 -> MOTOR_MAX_RPM :: 0T -> 100%T
+        self.duty_cycle = d_cycle
+        self.rpm = (self.direction * d_cycle * MOTOR_MAX_RPM)/255
+        self.wheel_angular_speed = self.rpm * 2 * np.pi / 60 # in rad/s
+        self.wheel_speed = self.wheel_angular_speed * WHEEL_RADIUS
+
+    def write_motor_pins(self, d_cycle: int, IN1_PIN_val: bool, IN2_PIN_val: bool):
+        self.set_direction_pin_vals(IN1_PIN_val, IN2_PIN_val)
+        self.set_duty_cycle(d_cycle)
+
+
+MOTOR_MAX_RPM = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s, which corresponds to 15.7 cm/s
+WHEEL_RADIUS = 25 #in px, 2.5 in cm
 ACCELERATION = 1 # pixel per tick
 ANGULAR_ACCELERATION = 0.01 # per tick
-class RobotData:
+
+class RobotInterface:
     '''
     - motor1speed: float IN
     - motor2speed: float IN
@@ -18,14 +77,21 @@ class RobotData:
     new_speed = None
     current_speed = 0
 
+    motors = None
+    width = None
+    length = None
+
     is_ang_decel = False
     is_ang_accel = False
     new_ang_vel = None
     current_angular_velocity = 0
 
-    def __init__(self, speed, ang_vel):
-        self.current_speed = speed
-        self.current_angular_velocity = ang_vel
+    def __init__(self, signals, dimensions: tuple):
+        m_left = Motor(0, signals[0][0], signals[0][1], signals[0][2])
+        m_right = Motor(1, signals[1][0], signals[1][1], signals[1][2])
+        self.motors = [m_left, m_right]
+        self.width = dimensions[1]
+        self.length = dimensions[0]
 
     ############################################
     # DONT TOUCH THESE WHILE NOT DEBUGGING
@@ -81,27 +147,14 @@ class RobotData:
                 self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
     #############################################
 
+    def update_signals(self, signals):
+        self.motors[0].write_motor_pins(signals[0][0], signals[0][1], signals[0][2])
+        self.motors[1].write_motor_pins(signals[1][0], signals[1][1], signals[1][2])
+        self.set_speed((self.motors[0].wheel_speed + self.motors[1].wheel_speed)/2)
+        self.set_ang_vel((self.motors[1].wheel_angular_speed - self.motors[0].wheel_angular_speed)/self.width)
+
     def get_speed(self):
         return self.current_speed
 
     def get_ang_vel(self):
         return self.current_angular_velocity
-    
-
-class Motor:
-
-    def __init__(self):
-        self._rpm : int = 0
-
-    @property
-    def rpm(self):
-        return self._rpm
-    
-    @rpm.setter
-    def rpm(self, value : int):
-        if (type(value) == int):
-            self._rpm = value
-            if (value > MOTOR_MAX_SPEED):    
-                self._rpm = MOTOR_MAX_SPEED 
-        else:
-            raise(f"RPM can only be a integer. It was tried to be set to {value} which is of type {type(value)}")
