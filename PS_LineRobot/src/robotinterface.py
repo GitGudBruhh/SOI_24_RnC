@@ -56,8 +56,9 @@ class Motor:
         # 0 -> 255 :: 0 -> MOTOR_MAX_RPM :: 0T -> 100%T
         self.duty_cycle = d_cycle
         self.rpm = (self.direction * d_cycle * MOTOR_MAX_RPM)/255
-        self.wheel_angular_speed = self.rpm * 2 * np.pi * 60 # in rad/s
-        self.wheel_speed = self.wheel_angular_speed * WHEEL_RADIUS
+        self.wheel_angular_speed = self.rpm * 2 * np.pi / 60 # in rad/s
+        self.wheel_speed = self.wheel_angular_speed * WHEEL_RADIUS # in px/s
+        print("AAA",self.wheel_speed)
 
     def write_motor_pins(self, d_cycle: int, IN1_PIN_val: bool, IN2_PIN_val: bool):
         self.set_direction_pin_vals(IN1_PIN_val, IN2_PIN_val)
@@ -79,6 +80,7 @@ class RobotInterface:
     motors = None
     width = None
     length = None
+    radius_of_rotation_div_w = None
 
     is_ang_decel = False
     is_ang_accel = False
@@ -183,6 +185,10 @@ class RobotInterface:
             self.motors[1].write_motor_pins(signals[1][0], signals[1][1], signals[1][2])
             self.set_speed((self.motors[0].wheel_speed + self.motors[1].wheel_speed)/2)
             self.set_ang_vel((self.motors[1].wheel_angular_speed - self.motors[0].wheel_angular_speed)/self.width)
+            if(not self.motors[1].wheel_angular_speed == self.motors[0].wheel_angular_speed):
+                self.radius_of_rotation_div_w = ((self.motors[1].wheel_angular_speed + self.motors[0].wheel_angular_speed)/(2*(self.motors[1].wheel_angular_speed - self.motors[0].wheel_angular_speed)))
+            else:
+                self.radius_of_rotation_div_w = 'INF'
             self.prev_signals = signals
 
     def get_speed(self):

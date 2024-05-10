@@ -25,7 +25,7 @@ for row in map_array:
 path_offset = np.array([strip_width/2, strip_width/2])
 # Create the robot object (Dimensions, start position, Direction facing)
 my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, np.pi/2)
-signal_list = [[0.025, False, True], [0.025, True, False]]
+signal_list = [[100, False, True], [100, True, False]]
 robot_interface = RobotInterface(signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
 
 # Initialize the pygame objects and screen
@@ -43,16 +43,6 @@ while running:
     screen.fill((200, 200, 200)) #Fill background
 
     elapsed_time = clock.get_time()
-
-    text_surface = my_font.render("Time elapsed: " + str(pygame.time.get_ticks()), False, (0, 0, 0))
-    screen.blit(text_surface, (300,0))
-    txt_s = my_font.render("Speed: " + str(my_rob.current_speed), False, (0, 0, 0))
-    screen.blit(txt_s, (600,0))
-    txt_s = my_font.render("Angular velocity: " + str(my_rob.current_angular_velocity), False, (0, 0, 0))
-    screen.blit(txt_s, (800,0))
-    txt_s = my_font.render("Sensor vals: " + str(my_rob.sensor_vals), False, (0, 0, 0))
-    screen.blit(txt_s, (1100,0))
-
 
     ######################################################################################################################
     # 1.
@@ -73,6 +63,17 @@ while running:
             elif row[i] == 'G':
                 pygame.draw.rect(screen, (0, 200, 0), block_pos + (strip_width, strip_width)) # Draw goal state
 
+    my_rob.get_sensor_vals(screen)
+
+    text_surface = my_font.render("Time elapsed: " + str(pygame.time.get_ticks()), False, (0, 0, 0))
+    screen.blit(text_surface, (300,0))
+    txt_s = my_font.render("Speed: " + str(my_rob.current_speed), False, (0, 0, 0))
+    screen.blit(txt_s, (600,0))
+    txt_s = my_font.render("Angular velocity: " + str(my_rob.current_angular_velocity), False, (0, 0, 0))
+    screen.blit(txt_s, (800,0))
+    txt_s = my_font.render("Sensor vals: " + str(my_rob.sensor_vals), False, (0, 0, 0))
+    screen.blit(txt_s, (1100,0))
+
     ########################################################################################################################
     # 2.
     # Updating signals and sensor values (DO NOT CHANGE THE DRAW ORDER)
@@ -85,19 +86,20 @@ while running:
     robot_interface.update_signals(tuple(signal_list))
     robot_interface.accel_decel(elapsed_time)
 
-    # !!!!!!!!!!!!!!!!! #################################
-    # DO NOT TOUCH THIS #################################
-    my_rob.set_speed(robot_interface.get_speed())     ###
-    my_rob.set_ang_vel(robot_interface.get_ang_vel()) ###
-    my_rob.update_pos(elapsed_time/1000)              ###
-    my_rob.update_angle(elapsed_time/1000)            ###
-    # DO NOT TOUCH THIS #################################
-    # !!!!!!!!!!!!!!!!! #################################
+    # !!!!!!!!!!!!!!!!! ####################################################################
+    # DO NOT TOUCH THIS ####################################################################
+    my_rob.set_speed(robot_interface.get_speed())                                        ###
+    my_rob.set_ang_vel(robot_interface.get_ang_vel())                                    ###
+    # my_rob.update_pos(elapsed_time/1000)                                                 ###
+    # my_rob.update_angle(elapsed_time/1000, robot_interface.radius_of_rotation_div_w)     ###
+    my_rob.update_pos(elapsed_time/1000, robot_interface.radius_of_rotation_div_w)
+    # DO NOT TOUCH THIS ####################################################################
+    # !!!!!!!!!!!!!!!!! ####################################################################
 
     # DEBUG ####################################################
     my_rob.get_sensor_vals(screen)
     if(my_rob.sensor_vals[0] == 0 and my_rob.sensor_vals[1] == 0):
-        signal_list = [[0.3, False, True], [0.2, True, False]]
+        signal_list = [[255, False, True], [255, False, True]]
     # END DEBUG #################################################
 
     ########################################################################################################################
@@ -109,10 +111,13 @@ while running:
             pygame.draw.circle(screen, (255, 255, 0), my_rob.corners[c_idx], 5)
         else:
             pygame.draw.circle(screen, (0, 0, 0), my_rob.corners[c_idx], 5)
+
     pygame.draw.circle(screen, (0, 0, 0), my_rob.wheel_pos[0], 5)
     pygame.draw.circle(screen, (0, 0, 0, 0), my_rob.wheel_pos[1], 5)
     pygame.draw.circle(screen, (255, 0, 0), my_rob.current_pos, 3)
     pygame.draw.circle(screen, (0, 0, 0), my_rob.current_pos + 30*my_rob.direction_unit_vec, 3)
+    if(type(my_rob.centre_of_rot) == np.ndarray):
+        pygame.draw.circle(screen, (255, 0, 0), my_rob.centre_of_rot, 3)
     pygame.display.flip()
 
     pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
