@@ -25,7 +25,7 @@ for row in map_array:
 path_offset = np.array([strip_width/2, strip_width/2])
 # Create the robot object (Dimensions, start position, Direction facing)
 my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, 0)
-signal_list = [[200, False, True], [200, False, True]]
+signal_list = [[255, False, True], [255, False, True]]
 robot_interface = RobotInterface(signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
 
 # Initialize the pygame objects and screen
@@ -58,11 +58,13 @@ while running:
     # signal_list = getSignalsFromFileOrSharedMemory()
     ##################################################
     robot_interface.update_signals(signal_list)
-    robot_interface.accel_decel(elapsed_time)
+    # robot_interface.accel_decel(elapsed_time)
 
     # DO NOT TOUCH THIS ################################
     my_rob.set_speed(robot_interface.get_speed())     ##
     my_rob.set_ang_vel(robot_interface.get_ang_vel()) ##
+    # my_rob.set_speed(robot_interface.new_speed)
+    # my_rob.set_ang_vel(robot_interface.new_ang_vel)
     my_rob.update_pos(elapsed_time/1000)              ##
     my_rob.update_angle(elapsed_time/1000)            ##
     # DO NOT TOUCH THIS ################################
