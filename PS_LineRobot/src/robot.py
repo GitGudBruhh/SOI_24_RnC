@@ -24,6 +24,8 @@ class Robot:
     corners = None
     corner_offsets = None
 
+    dist_travelled = 0
+
     def __init__(self, dimensions: tuple, start_pos: tuple, angle: float):
         self.width = dimensions[1]
         self.length = dimensions[0]
@@ -75,6 +77,7 @@ class Robot:
 
         r_matrix = create_rot_matrix(rot_angle)
 
+
         # self.direction_unit_vec = create_rot_matrix(rot_angle) @ self.direction_unit_vec
         # self.corner_offsets[0] = create_rot_matrix(rot_angle) @ self.corner_offsets[0]
         # self.corner_offsets[1] = create_rot_matrix(rot_angle) @ self.corner_offsets[1]
@@ -122,11 +125,12 @@ class Robot:
         if(not radius_of_rot_div_w == 'INF'):
             self.centre_of_rot = self.current_pos + radius_of_rot_div_w * 2 * (self.wheel_pos[0] - self.current_pos) # WARNING IS IT WITH RESPECT TO 1 OR 0
             self.rotate(self.current_angular_velocity * time_elapsed)
-            print(self.current_angular_velocity)
+            self.dist_travelled += (self.current_angular_velocity * time_elapsed) * radius_of_rot_div_w * self.width
         else:
             self.centre_of_rot = 'INF'
             displacement = self.direction_unit_vec * self.current_speed * time_elapsed
             self.move(displacement)
+            self.dist_travelled += np.linalg.norm(displacement)
 
     def set_speed(self, speed: float):
         self.current_speed = speed

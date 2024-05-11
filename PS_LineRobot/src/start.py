@@ -24,8 +24,8 @@ for row in map_array:
 # Temp variable Used once to center the robot onto the path at the start
 path_offset = np.array([strip_width/2, strip_width/2])
 # Create the robot object (Dimensions, start position, Direction facing)
-my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, np.pi/2)
-signal_list = [[100, False, True], [100, True, False]]
+my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, 0)
+signal_list = [[255, False, True], [255, True, False]]
 robot_interface = RobotInterface(signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
 
 # Initialize the pygame objects and screen
@@ -38,9 +38,16 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 running = True
 
+start_time = 0
+notstarted = True
+end_time = 0
 while running:
 
     screen.fill((200, 200, 200)) #Fill background
+
+    # start_time = end_time
+    # end_time = pygame.time.get_ticks()
+    # elapsed_time = end_time - start_time
 
     elapsed_time = clock.get_time()
 
@@ -67,9 +74,9 @@ while running:
 
     text_surface = my_font.render("Time elapsed: " + str(pygame.time.get_ticks()), False, (0, 0, 0))
     screen.blit(text_surface, (300,0))
-    txt_s = my_font.render("Speed: " + str(my_rob.current_speed), False, (0, 0, 0))
-    screen.blit(txt_s, (600,0))
-    txt_s = my_font.render("Angular velocity: " + str(my_rob.current_angular_velocity), False, (0, 0, 0))
+    # txt_s = my_font.render("Speed: " + str(my_rob.current_speed), False, (0, 0, 0))
+    # screen.blit(txt_s, (600,0))
+    txt_s = my_font.render("Dist: " + str(my_rob.dist_travelled), False, (0, 0, 0))
     screen.blit(txt_s, (800,0))
     txt_s = my_font.render("Sensor vals: " + str(my_rob.sensor_vals), False, (0, 0, 0))
     screen.blit(txt_s, (1100,0))
@@ -97,6 +104,13 @@ while running:
     # !!!!!!!!!!!!!!!!! ####################################################################
 
     # DEBUG ####################################################
+    # if(my_rob.dist_travelled > 157 and notstarted):
+    #     start_time = pygame.time.get_ticks()
+    #     notstarted = False
+    # if(my_rob.dist_travelled > 471):
+    #     end_time = pygame.time.get_ticks()
+    #     print(end_time - start_time)
+    #     input()
     my_rob.get_sensor_vals(screen)
     if(my_rob.sensor_vals[0] == 0 and my_rob.sensor_vals[1] == 0):
         signal_list = [[255, False, True], [255, False, True]]
@@ -117,7 +131,7 @@ while running:
     pygame.draw.circle(screen, (255, 0, 0), my_rob.current_pos, 3)
     pygame.draw.circle(screen, (0, 0, 0), my_rob.current_pos + 30*my_rob.direction_unit_vec, 3)
     if(type(my_rob.centre_of_rot) == np.ndarray):
-        pygame.draw.circle(screen, (255, 0, 0), my_rob.centre_of_rot, 3)
+        pygame.draw.circle(screen, (255, 0, 255), my_rob.centre_of_rot, 3)
     pygame.display.flip()
 
     pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
