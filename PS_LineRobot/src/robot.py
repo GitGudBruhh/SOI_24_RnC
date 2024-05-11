@@ -13,8 +13,8 @@ class Robot:
     half_diag_length = None
 
     current_pos = None
-    current_speed = None
-    current_angular_velocity = None
+    current_speed = 0
+    current_angular_velocity = 0
     sensor_vals = [0, 0]
     centre_of_rot = None
 
@@ -77,19 +77,6 @@ class Robot:
 
         r_matrix = create_rot_matrix(rot_angle)
 
-
-        # self.direction_unit_vec = create_rot_matrix(rot_angle) @ self.direction_unit_vec
-        # self.corner_offsets[0] = create_rot_matrix(rot_angle) @ self.corner_offsets[0]
-        # self.corner_offsets[1] = create_rot_matrix(rot_angle) @ self.corner_offsets[1]
-        #
-        # self.corners[0] = self.current_pos + self.corner_offsets[0]
-        # self.corners[1] = self.current_pos + self.corner_offsets[1]
-        # self.corners[2] = self.current_pos - self.corner_offsets[0]
-        # self.corners[3] = self.current_pos - self.corner_offsets[1]
-        #
-        # self.wheel_pos[0] = (self.corners[0] + self.corners[3])/2
-        # self.wheel_pos[1] = (self.corners[1] + self.corners[2])/2
-
         for idx in range(4):
             self.corners[idx] = r_matrix @ (self.corners[idx] - self.centre_of_rot) + self.centre_of_rot
 
@@ -117,9 +104,6 @@ class Robot:
     # The function parameters are taken from the robot interface
     # The robot interface preprocesses the data to provide speed values
     # DO NOT LET PARTICIPANTS DIRECTLY ACCESS THESE
-
-    # def update_angle(self, time_elapsed: float, radius_of_rot_div_w):
-
 
     def update_pos(self, time_elapsed: float, radius_of_rot_div_w):
         if(not radius_of_rot_div_w == 'INF'):

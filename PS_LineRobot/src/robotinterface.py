@@ -177,8 +177,6 @@ class RobotInterface:
             else:
                 self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
                 print("IS_ANG_ACCEL")
-
-        pass
     ############################################
 
     def update_signals(self, signals: tuple):
