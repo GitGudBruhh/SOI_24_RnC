@@ -13,15 +13,18 @@ class Robot:
     half_diag_length = None
 
     current_pos = None
-    current_speed = None
-    current_angular_velocity = None
+    current_speed = 0
+    current_angular_velocity = 0
     sensor_vals = [0, 0]
+    centre_of_rot = None
 
     angle = None
     direction_unit_vec = None
 
     corners = None
     corner_offsets = None
+
+    dist_travelled = 0
 
     def __init__(self, dimensions: tuple, start_pos: tuple, angle: float):
         self.width = dimensions[1]
@@ -70,17 +73,23 @@ class Robot:
     # Helper functions
     # DO NOT TOUCH THESE
     def rotate(self, rot_angle: float):
-        self.direction_unit_vec = create_rot_matrix(rot_angle) @ self.direction_unit_vec
-        self.corner_offsets[0] = create_rot_matrix(rot_angle) @ self.corner_offsets[0]
-        self.corner_offsets[1] = create_rot_matrix(rot_angle) @ self.corner_offsets[1]
+        # TODO!!!!! USE CENTRE_OF_ROT TO CHANGE
 
-        self.corners[0] = self.current_pos + self.corner_offsets[0]
-        self.corners[1] = self.current_pos + self.corner_offsets[1]
-        self.corners[2] = self.current_pos - self.corner_offsets[0]
-        self.corners[3] = self.current_pos - self.corner_offsets[1]
+        r_matrix = create_rot_matrix(rot_angle)
 
-        self.wheel_pos[0] = (self.corners[0] + self.corners[3])/2
-        self.wheel_pos[1] = (self.corners[1] + self.corners[2])/2
+        for idx in range(4):
+            self.corners[idx] = r_matrix @ (self.corners[idx] - self.centre_of_rot) + self.centre_of_rot
+
+        for idx in range(2):
+            self.wheel_pos[idx] = r_matrix @ (self.wheel_pos[idx] - self.centre_of_rot) + self.centre_of_rot
+
+        self.current_pos = r_matrix @ (self.current_pos - self.centre_of_rot) + self.centre_of_rot
+
+        self.corner_offsets[0] = self.corners[0] - self.current_pos
+        self.corner_offsets[1] = self.corners[1] - self.current_pos
+
+        tmp = (self.corners[0] + self.corners[1])/2 - self.current_pos
+        self.direction_unit_vec = tmp/np.linalg.norm(tmp)
 
     def move(self, displacement: float):
         self.current_pos += displacement
@@ -96,12 +105,16 @@ class Robot:
     # The robot interface preprocesses the data to provide speed values
     # DO NOT LET PARTICIPANTS DIRECTLY ACCESS THESE
 
-    def update_angle(self, time_elapsed: float):
-        self.rotate(self.current_angular_velocity * time_elapsed)
-
-    def update_pos(self, time_elapsed: float):
-        displacement = self.direction_unit_vec * self.current_speed * time_elapsed
-        self.move(displacement)
+    def update_pos(self, time_elapsed: float, radius_of_rot_div_w):
+        if(not radius_of_rot_div_w == 'INF'):
+            self.centre_of_rot = self.current_pos + radius_of_rot_div_w * 2 * (self.wheel_pos[0] - self.current_pos) # WARNING IS IT WITH RESPECT TO 1 OR 0
+            self.rotate(self.current_angular_velocity * time_elapsed)
+            self.dist_travelled += (self.current_angular_velocity * time_elapsed) * radius_of_rot_div_w * self.width
+        else:
+            self.centre_of_rot = 'INF'
+            displacement = self.direction_unit_vec * self.current_speed * time_elapsed
+            self.move(displacement)
+            self.dist_travelled += np.linalg.norm(displacement)
 
     def set_speed(self, speed: float):
         self.current_speed = speed
@@ -132,7 +145,5 @@ class Robot:
             self.sensor_vals[1] = 0
         else:
             self.sensor_vals[1] = 1
-
-        #print(self.sensor_vals)
 
         return self.sensor_vals
