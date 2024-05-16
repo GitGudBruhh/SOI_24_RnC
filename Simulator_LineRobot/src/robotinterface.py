@@ -100,7 +100,7 @@ class RobotInterface:
     ############################################
     # DONT TOUCH THESE WHILE NOT DEBUGGING
     def set_speed(self, speed):
-        ############# !!!!!!!!!!! #####################
+        ############ !!!!!!!!!!! #####################
         if(self.current_speed <= speed):
             self.is_accel = True
             self.is_decel = False
@@ -109,12 +109,12 @@ class RobotInterface:
             self.is_accel = False
             self.is_decel = True
             self.new_speed = speed
-        ############# !!!!!!!!!!! #####################
+        ############ !!!!!!!!!!! #####################
 
         # self.current_speed = speed
 
     def set_ang_vel(self, ang_vel):
-        ############ !!!!!!!!!!! #####################
+        ########### !!!!!!!!!!! #####################
         if(self.current_angular_velocity <= ang_vel):
             self.is_ang_accel = True
             self.is_ang_decel = False
@@ -123,7 +123,7 @@ class RobotInterface:
             self.is_ang_accel = False
             self.is_ang_decel = True
             self.new_ang_vel = ang_vel
-        ############ !!!!!!!!!!! #####################
+        ########### !!!!!!!!!!! #####################
 
         # self.current_angular_velocity = ang_vel
 
@@ -177,6 +177,8 @@ class RobotInterface:
             else:
                 self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
                 print("IS_ANG_ACCEL")
+
+        pass
     ############################################
 
     def update_signals(self, signals: tuple):

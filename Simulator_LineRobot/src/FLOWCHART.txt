@@ -9,7 +9,7 @@
                                     ▼                    │
                      ┌───────────────────────┬───────────┴────────────┐
                      │                       │                        │
-                     │       INPUT           │         OUTPUT         │  Shared memory/Files
+                     │       INPUT           │         OUTPUT         │  Shared memory/Files/Sockets
                      │ (motor drive signals) │    (sensor values)     │
                      │                       │                        │
                      └─────────┬─────────────┴────────────────────────┘
