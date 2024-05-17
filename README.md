@@ -23,9 +23,7 @@ $ source soi24venv/bin/activate
 (soi24venv)$ pip install -r requirements.txt
 ```
 
-[...]
-
-n. Using the virtual environment as source run the simulator in `src/`.
+4. Using the virtual environment as source run the simulator in `src/`.
 ```
 (soi24venv)$ cd src/
 (soi24venv)$ python start.py
@@ -47,7 +45,7 @@ The client is to decode the recieved data into an ascii string, split at the del
 The overall working of the simulator is provided in `flowchart.txt`.
 
 ## Examples
-###Python:
+Python:
 Suppose the pulse width is to be set at 100% for the left wheel. To rotate it anticlockwise (forward motion of wheel), `IN1` is to be set to false, and `IN2` is to be set to true. Suppose the right wheel's speed is to be set to zero.
 
 The binary encoded signal string in python will be:
