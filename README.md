@@ -25,7 +25,7 @@ $ source soi24venv/bin/activate
 
 4. Using the virtual environment as source run the simulator in `src/`.
 ```
-(soi24venv)$ cd src/
+(soi24venv)$ cd Simulator_LineRobot/src/
 (soi24venv)$ python start.py
 ```
 
