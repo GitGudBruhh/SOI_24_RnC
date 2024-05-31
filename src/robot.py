@@ -55,9 +55,15 @@ class Robot:
         # self.wheel_pos[1] = (self.corners[1] + self.corners[2])/2
         # WHEELS AT MIDDLE
 
-        # WHEELS AT BACK CRONERS
-        self.wheel_pos[0] = self.corners[3]
-        self.wheel_pos[1] = self.corners[2]
+        # WHEELS AT BACK CORNERS
+        # self.wheel_pos[0] = self.corners[3]
+        # self.wheel_pos[1] = self.corners[2]
+        # WHEELS AT BACK CORNERS
+        
+        # WHEELS AT SOME PLACE IN BETWEEN
+        ratio_front_to_back = 0.7
+        self.wheel_pos[0] = (1 - ratio_front_to_back) * self.corners[0] + ratio_front_to_back * self.corners[3]
+        self.wheel_pos[1] = (1 - ratio_front_to_back) * self.corners[1] + ratio_front_to_back * self.corners[2]
         # WHEELS AT BACK CORNERS
 
         ################################################
@@ -131,7 +137,7 @@ class Robot:
     def set_ang_vel(self, ang_vel: float):
         self.current_angular_velocity = ang_vel
 
-    def get_sensor_vals(self, screen: pygame.surface.Surface):
+    def get_sensor_vals(self, screen: pygame.surface.Surface, corners_on_screen):
         '''
         reads the IR sensor and return a list
         SHOULD BE USED BEFORE UPDATING THE ROBOT ON SCREEN
@@ -142,12 +148,14 @@ class Robot:
         (assuming corners[0] is front left corner)
 
         '''
-
-        '''
-        colour1 = screen.get_at((int(self.corners[0][0]), int(self.corners[0][1])))
+        
+        
+        colour1 = screen.get_at((int(corners_on_screen[0][0]), int(corners_on_screen[0][1])))
         colour1_gs = (colour1[0] + colour1[1] + colour1[2]) / 3
-        colour2 = screen.get_at((int(self.corners[1][0]), int(self.corners[1][1])))
+        
+        colour2 = screen.get_at((int(corners_on_screen[1][0]), int(corners_on_screen[1][1])))
         colour2_gs = (colour2[0] + colour2[1] + colour2[2]) / 3
+        
         if (colour1_gs < 150):
             self.sensor_vals[0] = 0
         else:
@@ -156,8 +164,5 @@ class Robot:
             self.sensor_vals[1] = 0
         else:
             self.sensor_vals[1] = 1
-
+        
         return self.sensor_vals
-        '''
-
-        return (0, 0)

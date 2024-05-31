@@ -1,6 +1,6 @@
 # Create map as string
 # Can get map from files as string
-# Made using asciiflow.comn
+# Made using asciiflow.com
 
 # map = '''
 #                    │          │                       │                                      │
