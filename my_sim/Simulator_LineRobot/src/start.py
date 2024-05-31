@@ -18,8 +18,8 @@ PORT = 65433  # The port used by the server
 ROBOT_WIDTH = 80 #8cm
 ROBOT_LENGTH = 80 #8cm
 
-MAZE_SCALING_FACTOR = 1
-strip_width *= MAZE_SCALING_FACTOR
+# MAZE_SCALING_FACTOR = 1
+# strip_width *= MAZE_SCALING_FACTOR
 
 signal_list = [[0, False, False], [0, False, False]]
 my_rob = None
@@ -102,9 +102,10 @@ def begin_simulation():
     global signal_list
     global my_rob
     global screen
+    global SIMULATION_COMPLETE
 
     # Create the robot object (Dimensions, start position, Direction facing)
-    my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, 0)
+    my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH), strip_width*start_pos + path_offset, np.pi/2)
     robot_interface = RobotInterface(signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
 
     # Initialize the pygame objects and screen
@@ -115,12 +116,17 @@ def begin_simulation():
     clock = pygame.time.Clock()
 
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+
     running = True
 
     # file_poll_time_period = 100
     # time_since_last_poll = 0
 
+    block_size = (strip_width, strip_width)
+    screen_midpoint = np.array([SCREEN_WIDTH/2, SCREEN_HEIGHT/2])
+
     while running:
+
         screen.fill((200, 200, 200)) #Fill background
 
         elapsed_time = clock.get_time()
@@ -148,21 +154,31 @@ def begin_simulation():
         # Drawing the path on screen
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.image.save(screen ,"screenshot.jpg")
                 running = False
-                global SIMULATION_COMPLETE
                 SIMULATION_COMPLETE = True
 
         # Choosing j, i (position of block) and filling it in if it's a strip
+
+
         for j in range(len(map_array)):
             row = map_array[j]
+
             for i in range(len(row)):
-                block_pos = (MAZE_SCALING_FACTOR*i*strip_width, MAZE_SCALING_FACTOR*j*strip_width) #Get block position
+                block_offset_from_rob = np.array([i*strip_width, j*strip_width]) - my_rob.current_pos
+                block_pos =  tuple(screen_midpoint + block_offset_from_rob) #Get block position ON SCREEN
+
+                if(block_pos[0] > SCREEN_WIDTH):
+                    continue
+                if(block_pos[1] > SCREEN_HEIGHT):
+                    continue
+
                 if(row[i] in '─,│,┐,┘,└,┌,┬,┤,┴,├,┼'):
-                    pygame.draw.rect(screen, (0, 0, 0), block_pos + (MAZE_SCALING_FACTOR*strip_width, MAZE_SCALING_FACTOR*strip_width)) # Draw the path at block_pos
+                    pygame.draw.rect(screen, (0, 0, 0), block_pos + block_size) # Draw the path at block_pos
                 elif row[i] == 'S':
-                    pygame.draw.rect(screen, (200, 200, 0), block_pos + (MAZE_SCALING_FACTOR*strip_width, MAZE_SCALING_FACTOR*strip_width)) # Draw start state
+                    pygame.draw.rect(screen, (200, 200, 0), block_pos + block_size) # Draw start state
                 elif row[i] == 'G':
-                    pygame.draw.rect(screen, (0, 200, 0), block_pos + (MAZE_SCALING_FACTOR*strip_width, MAZE_SCALING_FACTOR*strip_width)) # Draw goal state
+                    pygame.draw.rect(screen, (0, 200, 0), block_pos + block_size) # Draw goal state
 
         my_rob.get_sensor_vals(screen)
 
@@ -200,24 +216,29 @@ def begin_simulation():
         ####################################################################################################################
         ####################################################################################################################
         # 3.
-        # Drawing the robot pulygon and wheels
-        pygame.draw.polygon(screen, (0, 100, 10), my_rob.corners, width=0)
-        for c_idx in range(4):
-            if c_idx < 2:
-                pygame.draw.circle(screen, (255, 255, 0), my_rob.corners[c_idx], 5)
-            else:
-                pygame.draw.circle(screen, (0, 0, 0), my_rob.corners[c_idx], 5)
+        # Drawing the robot polygon and wheels
+        tmp = np.array([(screen_midpoint)]*2)
+        robot_corners_on_screen = list(tmp + my_rob.corner_offsets) + list(tmp - my_rob.corner_offsets)
+        pygame.draw.polygon(screen, (0, 100, 10), robot_corners_on_screen, width=0)
 
-        pygame.draw.circle(screen, (0, 0, 0), my_rob.wheel_pos[0], 5)
-        pygame.draw.circle(screen, (0, 0, 0, 0), my_rob.wheel_pos[1], 5)
-        pygame.draw.circle(screen, (255, 0, 0), my_rob.current_pos, 3)
-        pygame.draw.circle(screen, (0, 0, 0), my_rob.current_pos + 30*my_rob.direction_unit_vec, 3)
-        if(type(my_rob.centre_of_rot) == np.ndarray):
-            pygame.draw.circle(screen, (255, 0, 255), my_rob.centre_of_rot, 3)
+        # for c_idx in range(4):
+        #     if c_idx < 2:
+        #         pygame.draw.circle(screen, (255, 255, 0), my_rob.corners[c_idx], 5)
+        #     else:
+        #         pygame.draw.circle(screen, (0, 0, 0), my_rob.corners[c_idx], 5)
+        #
+        # pygame.draw.circle(screen, (0, 0, 0), my_rob.wheel_pos[0], 8)
+        # pygame.draw.circle(screen, (0, 0, 0, 0), my_rob.wheel_pos[1], 8)
+        # pygame.draw.circle(screen, (255, 0, 0), my_rob.current_pos, 3)
+        # pygame.draw.circle(screen, (0, 0, 0), my_rob.current_pos + 30*my_rob.direction_unit_vec, 3)
+        # if(type(my_rob.centre_of_rot) == np.ndarray):
+        #     pygame.draw.circle(screen, (255, 0, 255), my_rob.centre_of_rot, 3)
+
+
         pygame.display.flip()
 
         pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
-        clock.tick(60)
+        clock.tick(120)
 
         ####################################################################################################################
         ####################################################################################################################

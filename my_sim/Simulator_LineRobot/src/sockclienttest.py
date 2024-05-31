@@ -8,7 +8,7 @@ PORT = 65433  # The port used by the server
 prev_sensor_data = None
 sensor_data = None
 prev_motor_drive_inputs = None
-motor_drive_inputs = "100,1,0|100,0,1"
+motor_drive_inputs = "0,1,0|0,0,1"
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
@@ -24,4 +24,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         prev_sensor_data = sensor_data
         sensor_data = s.recv(1024)
 
-        # print(f"Recieved {sensor_data}")
+        print(f"Recieved {sensor_data}")
+
+        # if(sensor_data.decode() == '1,0'):
+        #     motor_drive_inputs = "100,0,1|0,0,1"
+        # if(sensor_data.decode() == '1,1'):
+        #     motor_drive_inputs = "0,0,1|0,0,1"

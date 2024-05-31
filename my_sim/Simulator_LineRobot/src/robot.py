@@ -49,8 +49,16 @@ class Robot:
         self.corners[3] = self.current_pos - self.corner_offsets[1]
 
         self.wheel_pos = np.zeros((2, 2))
-        self.wheel_pos[0] = (self.corners[0] + self.corners[3])/2
-        self.wheel_pos[1] = (self.corners[1] + self.corners[2])/2
+
+        # WHEELS AT MIDDLE
+        # self.wheel_pos[0] = (self.corners[0] + self.corners[3])/2
+        # self.wheel_pos[1] = (self.corners[1] + self.corners[2])/2
+        # WHEELS AT MIDDLE
+
+        # WHEELS AT BACK CRONERS
+        self.wheel_pos[0] = self.corners[3]
+        self.wheel_pos[1] = self.corners[2]
+        # WHEELS AT BACK CORNERS
 
         ################################################
         #   Direction unit vector (init. dir = pi/2)   #
@@ -107,7 +115,8 @@ class Robot:
 
     def update_pos(self, time_elapsed: float, radius_of_rot_div_w):
         if(not radius_of_rot_div_w == 'INF'):
-            self.centre_of_rot = self.current_pos + radius_of_rot_div_w * 2 * (self.wheel_pos[0] - self.current_pos) # WARNING IS IT WITH RESPECT TO 1 OR 0
+            wheel_mid = (self.wheel_pos[0] + self.wheel_pos[1])/2
+            self.centre_of_rot =  wheel_mid + radius_of_rot_div_w * 2 * (self.wheel_pos[0] - wheel_mid) # WARNING IS IT WITH RESPECT TO 1 OR 0
             self.rotate(self.current_angular_velocity * time_elapsed)
             self.dist_travelled += (self.current_angular_velocity * time_elapsed) * radius_of_rot_div_w * self.width
         else:
@@ -133,6 +142,8 @@ class Robot:
         (assuming corners[0] is front left corner)
 
         '''
+
+        '''
         colour1 = screen.get_at((int(self.corners[0][0]), int(self.corners[0][1])))
         colour1_gs = (colour1[0] + colour1[1] + colour1[2]) / 3
         colour2 = screen.get_at((int(self.corners[1][0]), int(self.corners[1][1])))
@@ -147,3 +158,6 @@ class Robot:
             self.sensor_vals[1] = 1
 
         return self.sensor_vals
+        '''
+
+        return (0, 0)
