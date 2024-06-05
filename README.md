@@ -35,11 +35,11 @@ The participant's code must connect to the server, acting as a client. Examples 
 
 Data is exchanged as a binary encoded string of signals with
 
-* the client requiring to update the pulse width (0 - 255), IN1 and IN2 (Boolean) signals asynchronously (need not be updated every loop), and
+* the client requiring to update the pulse width (`0 - 255`), `IN1` and `IN2` (Boolean) signals asynchronously (need not be updated every loop), and
 
 * the server responding to the client with the sensor values in a specified interval (here, 0.1s)
 
-The client is to decode the recieved data into an ascii string, split at the delimiters ',' (comma) and '|' (vertical bar), and use the sensor values provided to update the signals for the robot according to their algorithm.
+The client is to decode the recieved data into an ascii string, split at the delimiters `','` (comma) and `'|'` (vertical bar), and use the sensor values provided to update the signals for the robot according to their algorithm.
 
 
 The overall working of the simulator is provided in `flowchart.txt`.
