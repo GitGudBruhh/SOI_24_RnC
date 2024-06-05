@@ -3,14 +3,14 @@ import pygame
 import numpy as np
 
 max_len = -1
-strip_width =  15
+strip_width = 15
 
 for row in map_array:
     if max_len < len(row):
         max_len = len(row)
 
-SCREEN_WIDTH = max_len * strip_width #1400
-SCREEN_HEIGHT = len(map_array) * strip_width #780
+SCREEN_WIDTH = max_len * strip_width  # 1400
+SCREEN_HEIGHT = len(map_array) * strip_width  # 780
 
 running = True
 
@@ -33,17 +33,20 @@ for j in range(len(map_array)):
         # block_pos =  tuple(screen_midpoint) #Get block position ON SCREEN
         block_pos = (i*strip_width, j*strip_width)
 
-        if(block_pos[0] > SCREEN_WIDTH):
+        if (block_pos[0] > SCREEN_WIDTH):
             continue
-        if(block_pos[1] > SCREEN_HEIGHT):
+        if (block_pos[1] > SCREEN_HEIGHT):
             continue
 
-        if(row[i] in '─,│,┐,┘,└,┌,┬,┤,┴,├,┼'):
-            pygame.draw.rect(screen, (0, 0, 0), block_pos + block_size) # Draw the path at block_pos
+        if (row[i] in '─,│,┐,┘,└,┌,┬,┤,┴,├,┼'):
+            pygame.draw.rect(screen, (0, 0, 0), block_pos +
+                             block_size)  # Draw the path at block_pos
         elif row[i] == 'S':
-            pygame.draw.rect(screen, (200, 200, 0), block_pos + block_size) # Draw start state
+            pygame.draw.rect(screen, (200, 200, 0), block_pos +
+                             block_size)  # Draw start state
         elif row[i] == 'G':
-            pygame.draw.rect(screen, (0, 200, 0), block_pos + block_size) # Draw goal state
+            pygame.draw.rect(screen, (0, 200, 0), block_pos +
+                             block_size)  # Draw goal state
 
 pygame.display.flip()
 pygame.image.save(screen, "map.png")

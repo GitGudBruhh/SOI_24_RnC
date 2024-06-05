@@ -1,6 +1,7 @@
 import numpy as np
-import time
 import pygame
+
+from setupdata import WHEEL_POS_RATIO
 
 def create_rot_matrix(angle: float):
     return np.array([[np.cos(angle), np.sin(angle)],
@@ -61,9 +62,8 @@ class Robot:
         # WHEELS AT BACK CORNERS
         
         # WHEELS AT SOME PLACE IN BETWEEN
-        ratio_front_to_back = 0.7
-        self.wheel_pos[0] = (1 - ratio_front_to_back) * self.corners[0] + ratio_front_to_back * self.corners[3]
-        self.wheel_pos[1] = (1 - ratio_front_to_back) * self.corners[1] + ratio_front_to_back * self.corners[2]
+        self.wheel_pos[0] = (1 - WHEEL_POS_RATIO) * self.corners[0] + WHEEL_POS_RATIO * self.corners[3]
+        self.wheel_pos[1] = (1 - WHEEL_POS_RATIO) * self.corners[1] + WHEEL_POS_RATIO * self.corners[2]
         # WHEELS AT BACK CORNERS
 
         ################################################
@@ -140,7 +140,7 @@ class Robot:
     def get_sensor_vals(self, screen: pygame.surface.Surface, corners_on_screen):
         '''
         reads the IR sensor and return a list
-        SHOULD BE USED BEFORE UPDATING THE ROBOT ON SCREEN
+        SHOULD BE USED BEFORE DRAWING THE ROBOT ON SCREEN
 
 
         sensor_vals[0] -> left sensor
