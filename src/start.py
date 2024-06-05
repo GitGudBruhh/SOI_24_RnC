@@ -13,12 +13,13 @@ from mazemap import *
 SCREEN_WIDTH = 1600#1400
 SCREEN_HEIGHT = 1200 #780
 strip_width =  15 #1.5cm
+ratio_front_to_back = 0.7
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 65433  # The port used by the server
 
 ROBOT_WIDTH = 80 #8cm
-ROBOT_LENGTH = 80 #8cm
+ROBOT_LENGTH = 100 #12cm
 
 signal_list = [[0, False, False], [0, False, False]]
 my_rob = None
@@ -175,7 +176,21 @@ def begin_simulation():
 
         # 3.
         # Drawing the robot polygon and wheels
-        pygame.draw.polygon(screen, (0, 100, 10), robot_corners_on_screen, width=0)
+        perp_dir = (robot_corners_on_screen[1] - robot_corners_on_screen[0])/np.linalg.norm((robot_corners_on_screen[1] - robot_corners_on_screen[0]))
+        left_wheel_polygon = [(1 - ratio_front_to_back) * robot_corners_on_screen[0] + ratio_front_to_back * robot_corners_on_screen[3] + my_rob.direction_unit_vec * 25,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[0] + ratio_front_to_back * robot_corners_on_screen[3] + my_rob.direction_unit_vec * 25 - perp_dir * 15,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[0] + ratio_front_to_back * robot_corners_on_screen[3] - my_rob.direction_unit_vec * 25 - perp_dir * 15,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[0] + ratio_front_to_back * robot_corners_on_screen[3] - my_rob.direction_unit_vec * 25,
+                              ]
+        right_wheel_polygon = [(1 - ratio_front_to_back) * robot_corners_on_screen[1] + ratio_front_to_back * robot_corners_on_screen[2] + my_rob.direction_unit_vec * 25,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[1] + ratio_front_to_back * robot_corners_on_screen[2] + my_rob.direction_unit_vec * 25 + perp_dir * 15,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[1] + ratio_front_to_back * robot_corners_on_screen[2] - my_rob.direction_unit_vec * 25 + perp_dir * 15,
+                              (1 - ratio_front_to_back) * robot_corners_on_screen[1] + ratio_front_to_back * robot_corners_on_screen[2] - my_rob.direction_unit_vec * 25,
+                              ]
+        pygame.draw.polygon(screen, (0, 150, 10), robot_corners_on_screen, width=0)
+        pygame.draw.polygon(screen, (50, 50, 50), robot_corners_on_screen, width=3)
+        pygame.draw.polygon(screen, (0, 0, 0), left_wheel_polygon, width=0)
+        pygame.draw.polygon(screen, (0, 0, 0), right_wheel_polygon, width=0)
         
 #         for c_idx in range(4):
 #             if c_idx < 2:
