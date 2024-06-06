@@ -30,7 +30,7 @@ $ source soi24venv/bin/activate
 ```
 
 The simulator server is now waiting for the connection to be established at localhost, `127.0.0.1`, ports `65432` and `65433`.
-The port `65432` corresponds to the socket where the simulator receives the motor drive imput signals.
+The port `65432` corresponds to the socket where the simulator receives the motor drive input signals.
 The port `65433` corresponds to the socket from which the simulator sends the sensor output values.
 
 This design decision was taken to allow for asynchronous and independent communication for sending and recieving data.
