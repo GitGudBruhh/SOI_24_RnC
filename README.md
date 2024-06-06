@@ -42,7 +42,7 @@ $ python logicclient.py
 ```
 
 The simulator now runs and you can view it in the pygame window. Logs are written on to the standard output on the terminal.
-You can set the logging level in the setupdata.py file in range 0 - 4.
+You can set the logging level in the `setupdata.py` file in range 0 - 4.
 
 Note: The examples given use multithreading to communicate with the sockets parallelly.
 
