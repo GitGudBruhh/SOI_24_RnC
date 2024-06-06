@@ -29,15 +29,28 @@ $ source soi24venv/bin/activate
 (soi24venv)$ python start.py
 ```
 
-The simulator server is now waiting for the connection to be established at localhost IP address, `127.0.0.1`, port `65432`
+The simulator server is now waiting for the connection to be established at localhost, `127.0.0.1`, ports `65432` and `65433`.
+The port `65432` corresponds to the socket where the simulator receives the motor drive imput signals.
+The port `65433` corresponds to the socket from which the simulator sends the sensor output values.
 
+This design decision was taken to allow for asynchronous and independent communication for sending and recieving data.
 The participant's code must connect to the server, acting as a client. Examples codes for Python and C are provided in the repository.
+
+To test the socket functionality, open up a new termninal in `src/` and run
+```
+$ python logicclient.py
+```
+
+The simulator now runs and you can view it in the pygame window. Logs are written on to the standard output on the terminal.
+You can set the logging level in the setupdata.py file in range 0 - 4.
+
+Note: The examples given use multithreading to communicate with the sockets parallelly.
 
 Data is exchanged as a binary encoded string of signals with
 
 * the client requiring to update the pulse width (`0 - 255`), `IN1` and `IN2` (Boolean) signals asynchronously (need not be updated every loop), and
 
-* the server responding to the client with the sensor values in a specified interval (here, 0.1s)
+* the server responding to the client with the sensor values in a specified interval (here, 0.5s, can be changed in robotinterface.py)
 
 The client is to decode the recieved data into an ascii string, split at the delimiters `','` (comma) and `'|'` (vertical bar), and use the sensor values provided to update the signals for the robot according to their algorithm.
 
