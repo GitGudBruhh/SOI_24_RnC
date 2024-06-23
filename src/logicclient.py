@@ -8,7 +8,7 @@ def sender():
         s.connect((HOST, PORT1))
         
         prev_motor_drive_inputs = None
-        motor_drive_inputs = "100,0,1|100,1,0"
+        motor_drive_inputs = "255,0,1|255,1,0"
 
         while True:
             s.sendall(motor_drive_inputs.encode())
@@ -20,6 +20,7 @@ def sender():
             print(f"[PLYR] sender(): Acknowledgement recieved {acknowledgement}")
             
             if(acknowledgement.decode() == "SIM_COMPLETE"):
+                s.close()
                 return
 
 
@@ -35,6 +36,7 @@ def reciever():
             sensor_data = s.recv(1024)
             
             if(sensor_data.decode() == "SIM_COMPLETE"):
+                s.close()
                 return
 
             print(f"[PLYR] receiver(): Recieved {sensor_data}")

@@ -5,7 +5,7 @@ import socket
 
 from setupdata import (
     SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH, WHEEL_POS_RATIO,
-    ROBOT_LENGTH, ROBOT_WIDTH)
+    ROBOT_LENGTH, ROBOT_WIDTH, WHEEL_RADIUS)
 
 import setupdata
 
@@ -40,6 +40,11 @@ def begin_simulation():
     robot_motion = RobotMotion(setupdata.signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
 
     # Initialize the pygame objects and screen
+    
+    print("[SIM] Waiting for client to connect...")
+    while(not setupdata.is_sender_active and not setupdata.is_receiver_active):
+        pass
+    
     pygame.init()
     pygame.font.init()
     my_font = pygame.font.SysFont('Roboto', 30)
@@ -114,15 +119,15 @@ def begin_simulation():
         # Drawing the robot polygon and wheels
         perp_dir = (robot_corners_on_screen[1] - robot_corners_on_screen[0])/np.linalg.norm(
             (robot_corners_on_screen[1] - robot_corners_on_screen[0]))
-        left_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec * 25,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec * 25 - perp_dir * 15,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec * 25 - perp_dir * 15,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec * 25,
+        left_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS,
+                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS - perp_dir * 15,
+                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS - perp_dir * 15,
+                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS,
                               ]
-        right_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec * 25,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec * 25 + perp_dir * 15,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec * 25 + perp_dir * 15,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec * 25,
+        right_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS,
+                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS + perp_dir * 15,
+                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS + perp_dir * 15,
+                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec *WHEEL_RADIUS,
                                ]
         
         pygame.draw.polygon(setupdata.screen, (0, 150, 10), robot_corners_on_screen, width=0)

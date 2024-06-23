@@ -23,8 +23,12 @@ global signal_list
 global my_rob
 global screen
 global simulation_complete
+global is_sender_active
+global is_receiver_active
 
 signal_list = [[0, False, False], [0, False, False]]
 my_rob = None
 screen = None
 simulation_complete = False
+is_sender_active = False
+is_receiver_active = False
