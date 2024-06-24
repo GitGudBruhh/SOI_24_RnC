@@ -1,22 +1,18 @@
 import socket
 import copy
-import time
 
 from setupdata import (
     HOST,
     PORT1,
-    PORT2)
+    PORT2,
+    LOGLEVEL)
 
 import setupdata
 
-poll_time = 1
-
 def socket_worker_receiver():
-    # global signal_list
-    # global simulation_complete
-    global poll_time
     
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT1))
         s.listen()
         conn, addr = s.accept()
@@ -25,20 +21,17 @@ def socket_worker_receiver():
 
         with conn:
             print(f"[SIM] reciever(): Connected by {addr}")
+            
+            prev_string_data = None
             while True:
-                time.sleep(poll_time)
                 if(setupdata.simulation_complete):
                     data = conn.recv(1024)
                     conn.sendall("SIM_COMPLETE".encode())
-                    conn.close()
-                    # s.close()
-                    return
+                    break
 
                 data = conn.recv(1024)
 
                 string_data = data.decode('ascii')
-                
-                print(f"[SIM] receiver(): Recieved {string_data}")
                 
                 signals = string_data.split('|')
 
@@ -51,44 +44,76 @@ def socket_worker_receiver():
                 setupdata.signal_list = copy.deepcopy(signals[0:2])
                 
                 conn.send("ROBOT_SIG_RECV_ACK".encode())
-                print(f"[SIM] receiver(): Sent ROBOT_SIG_RECV_ACK")
+                
+                match int(LOGLEVEL / 2):
+                    case 0:
+                        pass
+                    
+                    case 1:
+                        if(not prev_string_data == string_data):
+                            print(f"[SIM] receiver(): Recieved {string_data}")
+                            prev_string_data = string_data
+    
+                    case 2:
+                        print(f"[SIM] receiver(): Recieved {string_data}")
+                    
+                    case 3:
+                        print(f"[SIM] receiver(): Recieved {string_data}")
+                        print(f"[SIM] receiver(): Sent ROBOT_SIG_RECV_ACK")
+            conn.close()
+        s.close()
 
 def socket_worker_sender():
-    # global my_rob
-    # global screen
-    # global simulation_complete
-    global poll_time
 
     prev_data = b''
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT2))
         s.listen()
         conn, addr = s.accept()
         
         setupdata.is_sender_active = True
-        
+        prev_data = None
         
         with conn:
             print(f"[SIM] sender(): Connected by {addr}")
-            while True:
-                time.sleep(poll_time)
-                
+            while True:                
                 if(setupdata.simulation_complete):
+                    completion_ack = conn.recv(1024)
                     conn.send("SIM_COMPLETE".encode())
-                    conn.close()
-                    # s.close()
-                    return
+                    break
 
-                if(not setupdata.my_rob == None and not setupdata.screen == None):
-                    sensor_vals = copy.copy(setupdata.my_rob.sensor_vals)
-                    sensor_vals[0] = str(int(sensor_vals[0]))
-                    sensor_vals[1] = str(int(sensor_vals[1]))
 
-                    current_data = (','.join(sensor_vals)).encode()
+                request = conn.recv(1024)
+                
+                
+                if(request.decode() == "SENSOR_DATA_REQ"):
+                    current_data = b'SENSOR_DATA_UNAVAIL'
                     
+                    if(not setupdata.my_rob == None and not setupdata.screen == None):
+                        sensor_vals = copy.copy(setupdata.my_rob.sensor_vals)
+                        sensor_vals[0] = str(int(sensor_vals[0]))
+                        sensor_vals[1] = str(int(sensor_vals[1]))
+
+                        current_data = (','.join(sensor_vals)).encode()
+                        
                     conn.send(current_data)
-                    print(f"[SIM] sender(): Sent {current_data}")
-                    
-                    acknowledgement = conn.recv(1024)
-                    print(f"[SIM] sender(): Acknowledgement recieved {acknowledgement}")
+                
+                    match LOGLEVEL % 2:
+                        case 0:
+                            pass
+                        case 1:
+                            if(not current_data == prev_data):
+                                print(f"[SIM] sender(): Recieved request {request}")
+                                print(f"[SIM] sender(): Sent {current_data}")
+                                acknowledgement = conn.recv(1024)
+                            
+                        case 2:
+                            print(f"[SIM] sender(): Recieved request {request}")
+                            print(f"[SIM] sender(): Sent {current_data}")
+                            acknowledgement = conn.recv(1024)
+                            print(f"[SIM] sender(): Acknowledgement recieved {acknowledgement}")
+            
+            conn.close()
+        s.close()

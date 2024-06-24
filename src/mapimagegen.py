@@ -1,9 +1,11 @@
 from mazemap import *
 import pygame
 import numpy as np
+from setupdata import STRIP_WIDTH
 
 max_len = -1
-strip_width = 15
+strip_width = STRIP_WIDTH
+
 
 for row in map_array:
     if max_len < len(row):

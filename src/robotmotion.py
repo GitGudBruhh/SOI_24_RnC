@@ -73,11 +73,11 @@ class RobotMotion:
                 self.new_speed = None
                 self.is_accel = False
                 self.is_decel = False
-                print("FIN_ACCEL")
+                # print("FIN_ACCEL")
 
             else:
                 self.current_speed += ACCELERATION * ticks_elapsed
-                print("IS_ACCEL")
+                # print("IS_ACCEL")
 
         if(self.is_decel):
             if(self.current_speed <= self.new_speed):
@@ -85,33 +85,33 @@ class RobotMotion:
                 self.new_speed = None
                 self.is_decel = False
                 self.is_accel = False
-                print("FIN_DECEL")
+                # print("FIN_DECEL")
 
             else:
                 self.current_speed -= ACCELERATION * ticks_elapsed
-                print("IS_DECEL")
+                # print("IS_DECEL")
 
         if(self.is_ang_accel):
             if(self.current_angular_velocity >= self.new_ang_vel):
                 self.current_angular_velocity = self.new_ang_vel
                 self.new_ang_vel = None
                 self.is_ang_accel = False
-                print("FIN_ANG_ACCEL")
+                # print("FIN_ANG_ACCEL")
 
             else:
                 self.current_angular_velocity += ANGULAR_ACCELERATION * ticks_elapsed
-                print("IS_ANG_ACCEL")
+                # print("IS_ANG_ACCEL")
 
         if(self.is_ang_decel):
             if(self.current_angular_velocity <= self.new_ang_vel):
                 self.current_angular_velocity = self.new_ang_vel
                 self.new_ang_vel = None
                 self.is_ang_decel = False
-                print("FIN_ANG_DECEL")
+                # print("FIN_ANG_DECEL")
 
             else:
                 self.current_angular_velocity -= ANGULAR_ACCELERATION * ticks_elapsed
-                print("IS_ANG_ACCEL")
+                # print("IS_ANG_ACCEL")
 
         pass
     ############################################

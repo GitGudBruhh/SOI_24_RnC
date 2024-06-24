@@ -7,7 +7,7 @@ ANGULAR_ACCELERATION = 0.1 # per tick^2
 
 SCREEN_WIDTH = 1600#1400
 SCREEN_HEIGHT = 1200 #780
-STRIP_WIDTH =  15 #1.5cm
+STRIP_WIDTH =  25 #1.5cm
 WHEEL_POS_RATIO = 0.7
 ROBOT_WIDTH = 80 #8cm
 ROBOT_LENGTH = 100 #12cm
@@ -15,6 +15,10 @@ ROBOT_LENGTH = 100 #12cm
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT1 = 65432
 PORT2 = 65433
+
+LOGLEVEL = 2
+
+# (00, 0), (00, 1), (01, 0), (01, 1), (10, 0), (10, 1), (11, 0), (11, 1)
 
 # GLOBAL VARIABLES
 
