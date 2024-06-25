@@ -10,7 +10,7 @@
                      ┌───────────────────────┬───────────┴────────────┐
                      │                       │                        │
                      │       INPUT           │         OUTPUT         │  Shared memory/Files/Sockets
-                     │ (motor drive signals) │    (sensor values)     │
+                     │ (motor drive signals) │     (sensor data)      │
                      │                       │                        │
                      └─────────┬─────────────┴────────────────────────┘
                                │                               ▲
@@ -52,7 +52,7 @@
         
         
                                                                             
-                 SENSOR VALUES RECIEVER 3-WAY COMMS.                
+                 SENSOR DATA RECIEVER 3-WAY COMMS.                
   ┌──────────────────────────────────────────────────────────────┐  
   │                                                              │  
   │                                                              │  
@@ -66,9 +66,13 @@
   │           │                                     │            │  
   │           │                                     │            │  
   │           │                                     │            │  
-  │           │                                     │            │  
-  │           │     RECEIVE: SENSOR_DATA_ENCODED    │            │  
-  │           │◄────────────────────────────────────┤            │  
+  │           │        RECEIVE: sensor_data         │            │  
+  │           │◄────────────────────────────────────┤            │ 
+  │           │                                     │            │ 
+  │           │                                     │            │ 
+  │           │                                     │            │ 
+  │           │     SEND: SENSOR_DATA_RECV_ACK      │            │  
+  │           ├────────────────────────────────────►│            │  
   │           │                                     │            │  
   │           │                 .                   │            │  
   │           │                 .                   │            │  
@@ -103,7 +107,7 @@
   
   
                                                                       
-                 ROBOT INPUTS SENDER 3-WAY COMMS.                
+               MOTOR DRIVE INPUTS SENDER 3-WAY COMMS.                
   ┌──────────────────────────────────────────────────────────────┐  
   │                                                              │  
   │                                                              │  
@@ -112,19 +116,14 @@
   │           │                                     │ SERVER     │  
   │           │                                     │ WAITING    │  
   │           │                                     │            │  
-  │           │        SEND: MOTOR_DRIVE_INP        │            │  
+  │           │        SEND: motor_drive_inp        │            │  
   │           ├────────────────────────────────────►│            │  
   │           │                                     │            │  
   │           │                                     │            │  
   │           │                                     │            │  
   │           │                                     │            │  
-  │           │     RECEIVE: ROBOT_SIG_RECV_ACK     │            │  
+  │           │     RECEIVE: MOTOR_INP_RECV_ACK     │            │  
   │           │◄────────────────────────────────────┤            │  
-  │           │                                     │            │  
-  │           │                                     │            │  
-  │           │                                     │            │  
-  │           │     SEND: SENSOR_DATA_RECV_ACK      │            │  
-  │           ├────────────────────────────────────►│            │  
   │           │                                     │            │  
   │           │                                     │            │  
   │           │                 .                   │            │  
@@ -135,7 +134,7 @@
   │ CLOSED    │ └─────────────────────────────────┘ │ SERVER     │  
   │           │                                     │ WAITING    │  
   │           │                                     │ TO CLOSE   │  
-  │           │        SEND: MOTOR_DRIVE_INP        │            │  
+  │           │        SEND: motor_drive_inp        │            │  
   │           ├────────────────────────────────────►│            │  
   │           │                                     │            │  
   │           │                                     │ INPUTS     │  

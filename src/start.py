@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import threading
 import socket
+import time
 
 from setupdata import (
     SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH, WHEEL_POS_RATIO,
@@ -11,25 +12,39 @@ import setupdata
 
 from robot import Robot
 from robotmotion import RobotMotion
-from mazemap import map_array
-from robotinterface import socket_worker_receiver, socket_worker_sender
+from mazemap import maze_array
+from robotinterface import motor_drive_inputs_receiver, sensor_vals_sender
 
 ##########################
 # SCALE: 1cm = 10px
 ##########################
 
-def begin_simulation():
-    # global setupdata.signal_list
-    # global setupdata.my_rob
-    # global setupdata.screen
-    # global setupdata.simulation_complete
-
+def begin_simulation():    
+    # Initialize the pygame objects and screen
+    pygame.init()
+    pygame.font.init()
+    my_font = pygame.font.SysFont('Roboto', 30)
+    setupdata.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+    map_image = pygame.image.load('map.png').convert()
+    
+    time.sleep(1)
+    
     # Determine the start pos
     start_pos = (0, 0)
-    for row in map_array:
+    s_count_checker = False
+    for row in maze_array:
         if 'S' in row:
-            start_pos = np.array([row.index('S'), map_array.index(row)])
-            print(f"Robot starts at {start_pos}")
+            start_pos = np.array([row.index('S'), maze_array.index(row)])
+            print(f"[SIM] Robot starts at {start_pos}")
+            
+            if(not s_count_checker):
+                s_count_checker = True
+            else:
+                print(f"[SIM] Multiple start positions found")
+            
+    if not s_count_checker:
+        print(f"[SIM] Start position has not been provided")
+        return
 
     # Temp variable used once to center the robot onto the path at the start
     path_offset = np.array([STRIP_WIDTH/2, STRIP_WIDTH/2])
@@ -38,26 +53,21 @@ def begin_simulation():
     setupdata.my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH),
                    STRIP_WIDTH*start_pos + path_offset, 0)
     robot_motion = RobotMotion(setupdata.signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
-
-    # Initialize the pygame objects and screen
     
     print("[SIM] Waiting for client to connect...")
     while(not setupdata.is_sender_active and not setupdata.is_receiver_active):
         pass
     
-    pygame.init()
-    pygame.font.init()
-    my_font = pygame.font.SysFont('Roboto', 30)
+    init_time = pygame.time.get_ticks()
+    print(f"[SIM] Simulation began at time {init_time}")
 
     clock = pygame.time.Clock()
-
-    setupdata.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-    map_image = pygame.image.load('map.png').convert()
 
     running = True
 
     block_size = (STRIP_WIDTH, STRIP_WIDTH)
     screen_midpoint = np.array([SCREEN_WIDTH/2, SCREEN_HEIGHT/2])
+
 
     while running:
 
@@ -153,6 +163,7 @@ def begin_simulation():
         pygame.display.flip()
 
         pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
+            
         clock.tick(120)
 
         ####################################################################################################################
@@ -163,9 +174,9 @@ def begin_simulation():
 t3 = threading.Thread(name='simulator', 
                       target=begin_simulation)
 t1 = threading.Thread(name='socket_worker_s',
-                      target=socket_worker_sender)
+                      target=motor_drive_inputs_receiver)
 t2 = threading.Thread(name='socket_worker_r',
-                      target=socket_worker_receiver)
+                      target=sensor_vals_sender)
 
 t3.start()
 t1.start()

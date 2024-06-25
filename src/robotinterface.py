@@ -9,8 +9,7 @@ from setupdata import (
 
 import setupdata
 
-def socket_worker_receiver():
-    
+def motor_drive_inputs_receiver():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT1))
@@ -25,11 +24,11 @@ def socket_worker_receiver():
             prev_string_data = None
             while True:
                 if(setupdata.simulation_complete):
-                    data = conn.recv(1024)
+                    data = conn.recv(32)
                     conn.sendall("SIM_COMPLETE".encode())
                     break
 
-                data = conn.recv(1024)
+                data = conn.recv(32)
 
                 string_data = data.decode('ascii')
                 
@@ -43,9 +42,9 @@ def socket_worker_receiver():
 
                 setupdata.signal_list = copy.deepcopy(signals[0:2])
                 
-                conn.send("ROBOT_SIG_RECV_ACK".encode())
+                conn.send("MOTOR_INP_RECV_ACK".encode())
                 
-                match int(LOGLEVEL / 2):
+                match LOGLEVEL[0]:
                     case 0:
                         pass
                     
@@ -59,11 +58,11 @@ def socket_worker_receiver():
                     
                     case 3:
                         print(f"[SIM] receiver(): Recieved {string_data}")
-                        print(f"[SIM] receiver(): Sent ROBOT_SIG_RECV_ACK")
+                        print(f"[SIM] receiver(): Sent MOTOR_INP_RECV_ACK")
             conn.close()
         s.close()
 
-def socket_worker_sender():
+def sensor_vals_sender():
 
     prev_data = b''
 
@@ -80,12 +79,12 @@ def socket_worker_sender():
             print(f"[SIM] sender(): Connected by {addr}")
             while True:                
                 if(setupdata.simulation_complete):
-                    completion_ack = conn.recv(1024)
+                    completion_ack = conn.recv(32)
                     conn.send("SIM_COMPLETE".encode())
                     break
 
 
-                request = conn.recv(1024)
+                request = conn.recv(32)
                 
                 
                 if(request.decode() == "SENSOR_DATA_REQ"):
@@ -99,20 +98,21 @@ def socket_worker_sender():
                         current_data = (','.join(sensor_vals)).encode()
                         
                     conn.send(current_data)
+                    acknowledgement = conn.recv(32)
                 
-                    match LOGLEVEL % 2:
+                    match LOGLEVEL[1]:
                         case 0:
                             pass
                         case 1:
                             if(not current_data == prev_data):
+                                prev_data = current_data
                                 print(f"[SIM] sender(): Recieved request {request}")
                                 print(f"[SIM] sender(): Sent {current_data}")
-                                acknowledgement = conn.recv(1024)
-                            
+                                
+
                         case 2:
                             print(f"[SIM] sender(): Recieved request {request}")
                             print(f"[SIM] sender(): Sent {current_data}")
-                            acknowledgement = conn.recv(1024)
                             print(f"[SIM] sender(): Acknowledgement recieved {acknowledgement}")
             
             conn.close()

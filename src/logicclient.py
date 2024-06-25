@@ -9,7 +9,7 @@ motor_drive_inputs = "255,0,1|255,1,0"
 sensor_data = None
 SIM_RUNNING = None
 
-def sender():
+def motor_drive_inputs_sender():
     global poll_time
     global motor_drive_inputs
     global SIM_RUNNING
@@ -26,7 +26,7 @@ def sender():
             #print(f"[PLYR] sender(): Sent {motor_drive_inputs}")
             prev_motor_drive_inputs = motor_drive_inputs
             
-            acknowledgement = s.recv(1024)
+            acknowledgement = s.recv(32)
             #print(f"[PLYR] sender(): Acknowledgement recieved {acknowledgement}")
             
             if(acknowledgement.decode() == "SIM_COMPLETE"):
@@ -35,7 +35,7 @@ def sender():
                 return
 
 
-def reciever():
+def sensor_vals_reciever():
     global poll_time
     global sensor_data
     global SIM_RUNNING
@@ -51,7 +51,7 @@ def reciever():
             time.sleep(poll_time)
             s.send("SENSOR_DATA_REQ".encode())
             
-            sensor_data = s.recv(1024)
+            sensor_data = s.recv(32)
             
             if(sensor_data.decode() == "SIM_COMPLETE"):
                 SIM_RUNNING = False
@@ -75,24 +75,24 @@ def logic():
             prev_sensor_data = sensor_data
             if(sensor_data == b'1,0'):
                 motor_drive_inputs = "10,0,1|10,1,0"
-                time.sleep(3.4)
+                time.sleep(3.6)
                 motor_drive_inputs = "100,0,1|0,0,0"
-                time.sleep(2.03)
+                time.sleep(2.045)
                 motor_drive_inputs = "255,0,1|255,1,0"
             elif(sensor_data == b'0,1' or sensor_data == b'0,0'):
                 motor_drive_inputs = "10,0,1|10,1,0"
-                time.sleep(3.4)
+                time.sleep(3.6)
                 motor_drive_inputs = "0,0,0|100,1,0"
-                time.sleep(2.03)
+                time.sleep(2.045)
                 motor_drive_inputs = "255,0,1|255,1,0"
-            else:
+            elif(sensor_data == b'1,1'):
                 motor_drive_inputs = "255,0,1|255,1,0"
     
 
 t1 = threading.Thread(name='socket_worker_s',
-                      target=sender)
+                      target=motor_drive_inputs_sender)
 t2 = threading.Thread(name='socket_worker_r',
-                      target=reciever)
+                      target=sensor_vals_reciever)
 t3 = threading.Thread(name='robot_logic',
                       target=logic)
 
