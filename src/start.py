@@ -6,7 +6,7 @@ import time
 
 from setupdata import (
     SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH, WHEEL_POS_RATIO,
-    ROBOT_LENGTH, ROBOT_WIDTH, WHEEL_RADIUS)
+    ROBOT_LENGTH, ROBOT_WIDTH, WHEEL_RADIUS, PATH_SENSOR_RATIO)
 
 import setupdata
 
@@ -149,16 +149,24 @@ def begin_simulation():
             pygame.draw.circle(
                 setupdata.screen, (255, 0, 255), setupdata.my_rob.centre_of_rot - setupdata.my_rob.current_pos + screen_midpoint, 3)
 
-        sensor_colors = [(50, 50, 50), (50, 50, 50)]
+        sensor_colors = [(50, 50, 50), (50, 50, 50), (50, 50, 50), (50, 50, 50)]
         if (setupdata.my_rob.sensor_vals[0] == 1):
             sensor_colors[0] = (255, 255, 0)
+        if (setupdata.my_rob.sensor_vals[3] == 1):
+            sensor_colors[3] = (255, 255, 0)
         if (setupdata.my_rob.sensor_vals[1] == 1):
             sensor_colors[1] = (255, 255, 0)
+        if (setupdata.my_rob.sensor_vals[2] == 1):
+            sensor_colors[2] = (255, 255, 0)
 
         pygame.draw.circle(
             setupdata.screen, sensor_colors[0], robot_corners_on_screen[0], 5)
         pygame.draw.circle(
-            setupdata.screen, sensor_colors[1], robot_corners_on_screen[1], 5)
+            setupdata.screen, sensor_colors[3], robot_corners_on_screen[1], 5)
+        pygame.draw.circle(
+            setupdata.screen, sensor_colors[1], ( (1 - PATH_SENSOR_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_RATIO*robot_corners_on_screen[1]).astype(int) , 5)
+        pygame.draw.circle(
+            setupdata.screen, sensor_colors[2], ( PATH_SENSOR_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_RATIO)*robot_corners_on_screen[1]).astype(int) , 5)
 
         pygame.display.flip()
 

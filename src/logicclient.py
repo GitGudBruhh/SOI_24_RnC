@@ -4,8 +4,8 @@ import time
 
 from setupdata import HOST, PORT1, PORT2
 
-poll_time = 0.05
-motor_drive_inputs = "255,0,1|255,1,0"
+poll_time = 0.025
+motor_drive_inputs = "100,0,1|100,1,0"
 sensor_data = None
 SIM_RUNNING = None
 
@@ -74,19 +74,20 @@ def logic():
         if(not prev_sensor_data == sensor_data):
             prev_sensor_data = sensor_data
             if(sensor_data == b'1,0'):
-                motor_drive_inputs = "10,0,1|10,1,0"
-                time.sleep(3.6)
-                motor_drive_inputs = "100,0,1|0,0,0"
-                time.sleep(2.045)
-                motor_drive_inputs = "255,0,1|255,1,0"
-            elif(sensor_data == b'0,1' or sensor_data == b'0,0'):
-                motor_drive_inputs = "10,0,1|10,1,0"
-                time.sleep(3.6)
-                motor_drive_inputs = "0,0,0|100,1,0"
-                time.sleep(2.045)
-                motor_drive_inputs = "255,0,1|255,1,0"
-            elif(sensor_data == b'1,1'):
-                motor_drive_inputs = "255,0,1|255,1,0"
+                motor_drive_inputs = "255,0,1|88,1,0"
+                time.sleep(1.222222)
+                motor_drive_inputs = "100,0,1|100,1,0"
+            #     motor_drive_inputs = "100,0,1|0,0,0"
+            #     time.sleep(2.045)
+            #     motor_drive_inputs = "255,0,1|255,1,0"
+            # elif(sensor_data == b'0,1' or sensor_data == b'0,0'):
+            #     motor_drive_inputs = "10,0,1|10,1,0"
+            #     time.sleep(3.6)
+            #     motor_drive_inputs = "0,0,0|100,1,0"
+            #     time.sleep(2.045)
+            #     motor_drive_inputs = "255,0,1|255,1,0"
+            # elif(sensor_data == b'1,1'):
+            #     motor_drive_inputs = "255,0,1|255,1,0"
     
 
 t1 = threading.Thread(name='socket_worker_s',

@@ -94,6 +94,8 @@ def sensor_vals_sender():
                         sensor_vals = copy.copy(setupdata.my_rob.sensor_vals)
                         sensor_vals[0] = str(int(sensor_vals[0]))
                         sensor_vals[1] = str(int(sensor_vals[1]))
+                        sensor_vals[2] = str(int(sensor_vals[2]))
+                        sensor_vals[3] = str(int(sensor_vals[3]))
 
                         current_data = (','.join(sensor_vals)).encode()
                         

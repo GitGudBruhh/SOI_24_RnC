@@ -1,7 +1,7 @@
 from mazemap import *
 import pygame
 import numpy as np
-from setupdata import STRIP_WIDTH
+from setupdata import STRIP_WIDTH, CHARSET
 
 max_len = -1
 strip_width = STRIP_WIDTH
@@ -40,7 +40,7 @@ for j in range(len(map_array)):
         if (block_pos[1] > SCREEN_HEIGHT):
             continue
 
-        if (row[i] in '─,│,┐,┘,└,┌,┬,┤,┴,├,┼'):
+        if (row[i] in CHARSET):
             pygame.draw.rect(screen, (0, 0, 0), block_pos +
                              block_size)  # Draw the path at block_pos
         elif row[i] == 'S':

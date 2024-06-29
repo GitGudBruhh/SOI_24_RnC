@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from setupdata import WHEEL_POS_RATIO
+from setupdata import WHEEL_POS_RATIO, PATH_SENSOR_RATIO
 
 def create_rot_matrix(angle: float):
     return np.array([[np.cos(angle), np.sin(angle)],
@@ -16,7 +16,7 @@ class Robot:
     current_pos = None
     current_speed = 0
     current_angular_velocity = 0
-    sensor_vals = [0, 0]
+    sensor_vals = [0, 0, 0, 0]
     centre_of_rot = None
 
     angle = None
@@ -150,19 +150,35 @@ class Robot:
         '''
         
         
-        colour1 = screen.get_at((int(corners_on_screen[0][0]), int(corners_on_screen[0][1])))
+        colour0 = screen.get_at((int(corners_on_screen[0][0]), int(corners_on_screen[0][1])))
+        colour0_gs = (colour0[0] + colour0[1] + colour0[2]) / 3
+        
+        colour3 = screen.get_at((int(corners_on_screen[1][0]), int(corners_on_screen[1][1])))
+        colour3_gs = (colour3[0] + colour3[1] + colour3[2]) / 3
+        
+        colour1 = screen.get_at((int( (1 - PATH_SENSOR_RATIO)*corners_on_screen[0][0] + PATH_SENSOR_RATIO*corners_on_screen[1][0] ) , 
+                                 int( (1 - PATH_SENSOR_RATIO)*corners_on_screen[0][1] + PATH_SENSOR_RATIO*corners_on_screen[1][1] )))
         colour1_gs = (colour1[0] + colour1[1] + colour1[2]) / 3
         
-        colour2 = screen.get_at((int(corners_on_screen[1][0]), int(corners_on_screen[1][1])))
+        colour2 = screen.get_at((int( PATH_SENSOR_RATIO*corners_on_screen[0][0] + (1 - PATH_SENSOR_RATIO)*corners_on_screen[1][0] ) , 
+                                 int( PATH_SENSOR_RATIO*corners_on_screen[0][1] + (1 - PATH_SENSOR_RATIO)*corners_on_screen[1][1] )))
         colour2_gs = (colour2[0] + colour2[1] + colour2[2]) / 3
         
-        if (colour1_gs < 150):
+        if (colour0_gs < 150):
             self.sensor_vals[0] = 0
         else:
             self.sensor_vals[0] = 1
-        if (colour2_gs < 150):
+        if (colour3_gs < 150):
+            self.sensor_vals[3] = 0
+        else:
+            self.sensor_vals[3] = 1
+        if (colour1_gs < 150):
             self.sensor_vals[1] = 0
         else:
             self.sensor_vals[1] = 1
+        if (colour2_gs < 150):
+            self.sensor_vals[2] = 0
+        else:
+            self.sensor_vals[2] = 1
         
         return self.sensor_vals

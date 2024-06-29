@@ -51,6 +51,8 @@ The `mazemap.py` file contains the `maze` (multiline-string) variable. Each non 
 
 The mazes are made using https://asciiflow.com
 
+If you wish to make your own maze using characters available on your keyboard, you can do so by adding the characters into the `CHARSET` string in `setupdata.py` as comma separated values. By default, the `O` character also acts as a maze block.
+
 Note: In the simulation, 1mm = 1px
 Note: The examples given use multithreading to communicate with the sockets parallelly.
 
@@ -91,4 +93,5 @@ This bytes object is to be sent across the socket to the simulator, which will u
 # Bugs? Need help?
 
 Open an issue on this repo or feel free to contact us at codingclub@iitdh.ac.in or 220010005@iitdh.ac.in
+
 
