@@ -5,7 +5,7 @@ import time
 from setupdata import HOST, PORT1, PORT2
 
 poll_time = 0.025
-motor_drive_inputs = "100,0,1|100,1,0"
+motor_drive_inputs = "255,0,1|253,1,0"
 sensor_data = None
 SIM_RUNNING = None
 
@@ -68,15 +68,32 @@ def logic():
     global SIM_RUNNING
     
     prev_sensor_data = None
+    s_d_tup = None
     SIM_RUNNING = True
     
     while SIM_RUNNING:
         if(not prev_sensor_data == sensor_data):
             prev_sensor_data = sensor_data
-            if(sensor_data == b'1,0'):
-                motor_drive_inputs = "255,0,1|88,1,0"
-                time.sleep(1.222222)
-                motor_drive_inputs = "100,0,1|100,1,0"
+            s_d_tup = sensor_data.decode().split(',')
+            
+            print(s_d_tup)
+            
+            if(s_d_tup[1]  == '0' and s_d_tup[2]  == '1'):
+                tmp = motor_drive_inputs
+                motor_drive_inputs = "100,0,1|105,1,0"
+                time.sleep(0.2)
+                motor_drive_inputs = "255,0,1|255,1,0"
+            
+            if(s_d_tup[1]  == '1' and s_d_tup[2]  == '0'):
+                tmp = motor_drive_inputs
+                motor_drive_inputs = "105,0,1|100,1,0"
+                time.sleep(0.2)
+                motor_drive_inputs = "255,0,1|255,1,0"
+                
+            # if(sensor_data == b'1,0,0,0'):
+            #     motor_drive_inputs = "255,0,1|88,1,0"
+            #     time.sleep(1.222222)
+            #     motor_drive_inputs = "100,0,1|100,1,0"
             #     motor_drive_inputs = "100,0,1|0,0,0"
             #     time.sleep(2.045)
             #     motor_drive_inputs = "255,0,1|255,1,0"

@@ -107,7 +107,7 @@
   
   
                                                                       
-               MOTOR DRIVE INPUTS SENDER 3-WAY COMMS.                
+               MOTOR DRIVE INPUTS SENDER 2-WAY COMMS.                
   ┌──────────────────────────────────────────────────────────────┐  
   │                                                              │  
   │                                                              │  

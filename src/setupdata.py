@@ -1,5 +1,9 @@
 # CONSTANTS
 
+#--------------------------------------------------------------------------------
+# SCALE: 1cm = 10px
+# -------------------------------------------------------------------------------
+
 MOTOR_MAX_RPM = 60 # in rpm, which is 120pi rad/min, which is 2pi rad/s, which corresponds to 15.7 cm/s
 WHEEL_RADIUS = 25 #in px, 2.5 in cm
 ACCELERATION = 5 # pixel per tick^2
@@ -7,7 +11,7 @@ ANGULAR_ACCELERATION = 0.1 # per tick^2
 
 SCREEN_WIDTH = 1600#1400
 SCREEN_HEIGHT = 1200 #780
-STRIP_WIDTH =  25 #1.5cm
+STRIP_WIDTH =  15 #1.5cm
 WHEEL_POS_RATIO = 0.7
 PATH_SENSOR_RATIO=0.4
 ROBOT_WIDTH = 80 #8cm
@@ -17,7 +21,7 @@ HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT1 = 65432
 PORT2 = 65433
 
-CHARSET = '─,│,┐,┘,└,┌,┬,┤,┴,├,┼,O'
+MAZE_CHARSET = '─,│,┐,┘,└,┌,┬,┤,┴,├,┼,O'
 LOGLEVEL = (1, 1) # Tuple: (MOTOR_DRIVE_CHANNEL: 0 - 3, SENSOR_DATA_CHANNEL: 0 - 2)
 
 # (00, 0), (00, 1), (01, 0), (01, 1), (10, 0), (10, 1), (11, 0), (11, 1)

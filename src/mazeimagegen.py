@@ -1,18 +1,18 @@
 from mazemap import *
 import pygame
 import numpy as np
-from setupdata import STRIP_WIDTH, CHARSET
+from setupdata import STRIP_WIDTH, MAZE_CHARSET
 
 max_len = -1
 strip_width = STRIP_WIDTH
 
 
-for row in map_array:
+for row in maze_array:
     if max_len < len(row):
         max_len = len(row)
 
 SCREEN_WIDTH = max_len * strip_width  # 1400
-SCREEN_HEIGHT = len(map_array) * strip_width  # 780
+SCREEN_HEIGHT = len(maze_array) * strip_width  # 780
 
 running = True
 
@@ -27,8 +27,9 @@ screen_midpoint = np.array([SCREEN_WIDTH/2, SCREEN_HEIGHT/2])
 
 screen.fill((200, 200, 200))
 
-for j in range(len(map_array)):
-    row = map_array[j]
+for j in range(len(maze_array)):
+    print(j)
+    row = maze_array[j]
 
     for i in range(len(row)):
         # block_offset_from_rob = np.array([i*strip_width, j*strip_width])
@@ -40,7 +41,7 @@ for j in range(len(map_array)):
         if (block_pos[1] > SCREEN_HEIGHT):
             continue
 
-        if (row[i] in CHARSET):
+        if (row[i] in MAZE_CHARSET):
             pygame.draw.rect(screen, (0, 0, 0), block_pos +
                              block_size)  # Draw the path at block_pos
         elif row[i] == 'S':
