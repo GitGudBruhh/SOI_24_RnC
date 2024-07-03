@@ -39,32 +39,32 @@ class RobotMotion:
     ############################################
     # DONT TOUCH THESE WHILE NOT DEBUGGING
     def set_speed(self, speed: float):
-        ############ !!!!!!!!!!! #####################
-        # if(self.current_speed <= speed):
-        #     self.is_accel = True
-        #     self.is_decel = False
-        #     self.new_speed = speed
-        # else:
-        #     self.is_accel = False
-        #     self.is_decel = True
-        #     self.new_speed = speed
-        ############ !!!!!!!!!!! #####################
+        ########### !!!!!!!!!!! #####################
+        if(self.current_speed <= speed):
+            self.is_accel = True
+            self.is_decel = False
+            self.new_speed = speed
+        else:
+            self.is_accel = False
+            self.is_decel = True
+            self.new_speed = speed
+        ########### !!!!!!!!!!! #####################
 
-        self.current_speed = speed
+        # self.current_speed = speed
 
     def set_ang_vel(self, ang_vel: float):
-        ########### !!!!!!!!!!! #####################
-        # if(self.current_angular_velocity <= ang_vel):
-        #     self.is_ang_accel = True
-        #     self.is_ang_decel = False
-        #     self.new_ang_vel = ang_vel
-        # else:
-        #     self.is_ang_accel = False
-        #     self.is_ang_decel = True
-        #     self.new_ang_vel = ang_vel
-        ########### !!!!!!!!!!! #####################
+        ########## !!!!!!!!!!! #####################
+        if(self.current_angular_velocity <= ang_vel):
+            self.is_ang_accel = True
+            self.is_ang_decel = False
+            self.new_ang_vel = ang_vel
+        else:
+            self.is_ang_accel = False
+            self.is_ang_decel = True
+            self.new_ang_vel = ang_vel
+        ########## !!!!!!!!!!! #####################
 
-        self.current_angular_velocity = ang_vel
+        # self.current_angular_velocity = ang_vel
 
     def accel_decel(self, ticks_elapsed: int):
         if(self.is_accel):

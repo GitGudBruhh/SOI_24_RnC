@@ -44,21 +44,21 @@ def motor_drive_inputs_receiver():
                 
                 conn.send("MOTOR_INP_RECV_ACK".encode())
                 
-                match LOGLEVEL[0]:
-                    case 0:
-                        pass
-                    
-                    case 1:
-                        if(not prev_string_data == string_data):
-                            print(f"[SIM] receiver(): Recieved {string_data}")
-                            prev_string_data = string_data
-    
-                    case 2:
+                if LOGLEVEL[0] == 0:
+                    pass
+                
+                elif LOGLEVEL[0] == 1:
+                    if(not prev_string_data == string_data):
                         print(f"[SIM] receiver(): Recieved {string_data}")
-                    
-                    case 3:
-                        print(f"[SIM] receiver(): Recieved {string_data}")
-                        print(f"[SIM] receiver(): Sent MOTOR_INP_RECV_ACK")
+                        prev_string_data = string_data
+
+                elif LOGLEVEL[0] == 2:
+                    print(f"[SIM] receiver(): Recieved {string_data}")
+                
+                elif LOGLEVEL[0] == 3:
+                    print(f"[SIM] receiver(): Recieved {string_data}")
+                    print(f"[SIM] receiver(): Sent MOTOR_INP_RECV_ACK")
+
             conn.close()
         s.close()
 
@@ -100,22 +100,19 @@ def sensor_vals_sender():
                         current_data = (','.join(sensor_vals)).encode()
                         
                     conn.send(current_data)
-                    acknowledgement = conn.recv(32)
                 
-                    match LOGLEVEL[1]:
-                        case 0:
-                            pass
-                        case 1:
-                            if(not current_data == prev_data):
-                                prev_data = current_data
-                                print(f"[SIM] sender(): Recieved request {request}")
-                                print(f"[SIM] sender(): Sent {current_data}")
-                                
+                    if LOGLEVEL[1] == 0:
+                        pass
+                    elif LOGLEVEL[1] == 1:
+                        if(not current_data == prev_data):
+                            prev_data = current_data
 
-                        case 2:
-                            print(f"[SIM] sender(): Recieved request {request}")
                             print(f"[SIM] sender(): Sent {current_data}")
-                            print(f"[SIM] sender(): Acknowledgement recieved {acknowledgement}")
+                            
+
+                    elif LOGLEVEL[1] == 2:
+                        print(f"[SIM] sender(): Recieved request {request}")
+                        print(f"[SIM] sender(): Sent {current_data}")
             
             conn.close()
         s.close()

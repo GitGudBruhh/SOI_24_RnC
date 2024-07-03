@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from setupdata import WHEEL_POS_RATIO, PATH_SENSOR_RATIO
+from setupdata import WHEEL_POS_RATIO, PATH_SENSOR_POS_RATIO
 
 def create_rot_matrix(angle: float) -> np.ndarray[np.ndarray[np.float64]]:
     return np.array([[np.cos(angle), np.sin(angle)],
@@ -34,7 +34,6 @@ class Robot:
         self.corner_angle = np.arctan(self.width/self.length)
         self.half_diag_length = np.linalg.norm([self.width/2, self.length/2])
         self.current_pos = np.array(start_pos, dtype='float64')
-        print(self.current_pos, "AAAAAAAAA")
         self.angle = angle
         self.direction_unit_vec = create_rot_matrix(angle) @ np.array([1, 0])
 
@@ -48,8 +47,6 @@ class Robot:
         self.wheel_pos = np.zeros((2, 2), dtype=np.float64)
         self.wheel_pos[0] = (1 - WHEEL_POS_RATIO) * self.corners[0] + WHEEL_POS_RATIO * self.corners[3]
         self.wheel_pos[1] = (1 - WHEEL_POS_RATIO) * self.corners[1] + WHEEL_POS_RATIO * self.corners[2]
-
-        # WHEELS AT BACK CORNERS
 
         ################################################
         #   Direction unit vector                      #
@@ -73,6 +70,7 @@ class Robot:
     # DO NOT TOUCH THESE
     def rotate(self, rot_angle: float):
         r_matrix = create_rot_matrix(rot_angle)
+        self.angle += rot_angle
 
         for idx in range(4):
             self.corners[idx] = r_matrix @ (self.corners[idx] - self.centre_of_rot) + self.centre_of_rot
@@ -143,12 +141,12 @@ class Robot:
     # --------------------------------------------------------------------------------
     # Path sensor detection
     # --------------------------------------------------------------------------------
-        colour1 = screen.get_at((int( (1 - PATH_SENSOR_RATIO)*corners_on_screen[0][0] + PATH_SENSOR_RATIO*corners_on_screen[1][0] ) , 
-                                 int( (1 - PATH_SENSOR_RATIO)*corners_on_screen[0][1] + PATH_SENSOR_RATIO*corners_on_screen[1][1] )))
+        colour1 = screen.get_at((int( (1 - PATH_SENSOR_POS_RATIO)*corners_on_screen[0][0] + PATH_SENSOR_POS_RATIO*corners_on_screen[1][0] ) , 
+                                 int( (1 - PATH_SENSOR_POS_RATIO)*corners_on_screen[0][1] + PATH_SENSOR_POS_RATIO*corners_on_screen[1][1] )))
         colour1_gs = (colour1[0] + colour1[1] + colour1[2]) / 3
         
-        colour2 = screen.get_at((int( PATH_SENSOR_RATIO*corners_on_screen[0][0] + (1 - PATH_SENSOR_RATIO)*corners_on_screen[1][0] ) , 
-                                 int( PATH_SENSOR_RATIO*corners_on_screen[0][1] + (1 - PATH_SENSOR_RATIO)*corners_on_screen[1][1] )))
+        colour2 = screen.get_at((int( PATH_SENSOR_POS_RATIO*corners_on_screen[0][0] + (1 - PATH_SENSOR_POS_RATIO)*corners_on_screen[1][0] ) , 
+                                 int( PATH_SENSOR_POS_RATIO*corners_on_screen[0][1] + (1 - PATH_SENSOR_POS_RATIO)*corners_on_screen[1][1] )))
         colour2_gs = (colour2[0] + colour2[1] + colour2[2]) / 3
         
         if (colour0_gs < 150):

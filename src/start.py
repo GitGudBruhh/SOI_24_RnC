@@ -3,10 +3,12 @@ import pygame
 import threading
 import socket
 import time
+from drawutils import *
 
 from setupdata import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH, WHEEL_POS_RATIO,
-    ROBOT_LENGTH, ROBOT_WIDTH, WHEEL_RADIUS, PATH_SENSOR_RATIO)
+    SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH,
+    ROBOT_LENGTH, ROBOT_WIDTH,
+    MAZE_FILE_NAME)
 
 import setupdata
 
@@ -21,9 +23,9 @@ def begin_simulation():
 # --------------------------------------------------------------------------------
     pygame.init()
     pygame.font.init()
-    my_font = pygame.font.SysFont('', 30)
+    my_font = pygame.font.SysFont('', 22)
     setupdata.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-    map_image = pygame.image.load('map.png').convert()
+    map_image = pygame.image.load(MAZE_FILE_NAME).convert()
     
     screen_midpoint = np.array([SCREEN_WIDTH/2, SCREEN_HEIGHT/2])
     
@@ -59,6 +61,10 @@ def begin_simulation():
 # --------------------------------------------------------------------------------
 # Create the robot object (Dimensions, start position, Direction facing)
 # --------------------------------------------------------------------------------
+    
+    base_image = pygame.image.load('robot.jpg')
+    base_image = pygame.transform.scale(base_image, (ROBOT_WIDTH, ROBOT_LENGTH))
+    
     setupdata.my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH),
                    STRIP_WIDTH*start_pos + offset_center_to_path, 0)
     robot_motion = RobotMotion(setupdata.signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
@@ -75,7 +81,7 @@ def begin_simulation():
     
     while running:
 
-        setupdata.screen.fill((200, 200, 200))  # Fill background
+        setupdata.screen.fill((255, 255, 255))  # Fill background
 
         elapsed_time = clock.get_time()
 
@@ -86,23 +92,23 @@ def begin_simulation():
 
     # --------------------------------------------------------------------------------
     # 1.
-    # Drawing the map and data on screen
+    # Drawing the map and writing data on screen
     # --------------------------------------------------------------------------------
 
         setupdata.screen.blit(map_image, screen_midpoint - setupdata.my_rob.current_pos)
 
         text_surface = my_font.render(
             "Time elapsed: " + str(pygame.time.get_ticks()), False, (0, 0, 0))
-        setupdata.screen.blit(text_surface, (300, 0))
+        setupdata.screen.blit(text_surface, (SCREEN_WIDTH/12, 0))
         txt_s = my_font.render(
             "Speed: " + str(int(setupdata.my_rob.current_speed)), False, (0, 0, 0))
-        setupdata.screen.blit(txt_s, (600, 0))
+        setupdata.screen.blit(txt_s, (SCREEN_WIDTH/3, 0))
         txt_s = my_font.render(
             "Dist: " + str(int(setupdata.my_rob.dist_travelled)), False, (0, 0, 0))
-        setupdata.screen.blit(txt_s, (800, 0))
+        setupdata.screen.blit(txt_s, (SCREEN_WIDTH/2, 0))
         txt_s = my_font.render(
             "Sensor vals: " + str(setupdata.my_rob.sensor_vals), False, (0, 0, 0))
-        setupdata.screen.blit(txt_s, (1100, 0))
+        setupdata.screen.blit(txt_s, (6*SCREEN_WIDTH/8, 0))
         
     # --------------------------------------------------------------------------------
     # 2.
@@ -130,30 +136,16 @@ def begin_simulation():
     
     # --------------------------------------------------------------------------------
     # 3.
-    # Drawing the robot polygon, wheels and sensors
+    # Drawing the robot and its sensors
     # --------------------------------------------------------------------------------
+    
+        setupdata.ROBOT_IMAGE = pygame.transform.rotozoom(base_image, setupdata.my_rob.angle * 180/np.pi - 90, 1)
 
-        perp_dir = (robot_corners_on_screen[1] - robot_corners_on_screen[0])/np.linalg.norm(
-            (robot_corners_on_screen[1] - robot_corners_on_screen[0]))
-        left_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
-                              (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS,
-                              ]
-        right_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
-                               (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - setupdata.my_rob.direction_unit_vec * WHEEL_RADIUS,
-                               ]
-        
-        pygame.draw.polygon(setupdata.screen, (0, 150, 10), robot_corners_on_screen, width=0)
-        pygame.draw.polygon(setupdata.screen, (50, 50, 50), robot_corners_on_screen, width=1)
-        pygame.draw.polygon(setupdata.screen, (0, 0, 0), left_wheel_polygon, width=0)
-        pygame.draw.polygon(setupdata.screen, (0, 0, 0), right_wheel_polygon, width=0)
+        draw_robot(setupdata.screen, robot_corners_on_screen, setupdata.my_rob.direction_unit_vec)
 
-        if (type(setupdata.my_rob.centre_of_rot) == np.ndarray):
-            pygame.draw.circle(
-                setupdata.screen, (255, 0, 255), setupdata.my_rob.centre_of_rot - setupdata.my_rob.current_pos + screen_midpoint, 3)
+        # if (type(setupdata.my_rob.centre_of_rot) == np.ndarray):
+        #     pygame.draw.circle(
+        #         setupdata.screen, (255, 0, 255), setupdata.my_rob.centre_of_rot - setupdata.my_rob.current_pos + screen_midpoint, 3)
 
         sensor_colors = [(50, 50, 50), (50, 50, 50), (50, 50, 50), (50, 50, 50)]
         if (setupdata.my_rob.sensor_vals[0] == 1):
@@ -164,15 +156,8 @@ def begin_simulation():
             sensor_colors[1] = (255, 255, 0)
         if (setupdata.my_rob.sensor_vals[2] == 1):
             sensor_colors[2] = (255, 255, 0)
-
-        pygame.draw.circle(
-            setupdata.screen, sensor_colors[0], robot_corners_on_screen[0], 3)
-        pygame.draw.circle(
-            setupdata.screen, sensor_colors[3], robot_corners_on_screen[1], 3)
-        pygame.draw.circle(
-            setupdata.screen, sensor_colors[1], ( (1 - PATH_SENSOR_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_RATIO*robot_corners_on_screen[1]).astype(int) , 3)
-        pygame.draw.circle(
-            setupdata.screen, sensor_colors[2], ( PATH_SENSOR_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_RATIO)*robot_corners_on_screen[1]).astype(int) , 3)
+            
+        draw_sensors(setupdata.screen, sensor_colors, robot_corners_on_screen)
 
     # --------------------------------------------------------------------------------
     # 4.

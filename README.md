@@ -48,12 +48,33 @@ The simulator now runs and you can view it in the pygame window. Logs are writte
 The `setupdata.py` file contains constants related to the robot's dimensions and the maze setup. These can be modified before the simulation. The logging level for the standard output can also be set in the same file. The constants used in the testing phase are provided in the `setupdata.default` file.
 
 The `mazemap.py` file contains the `maze` (multiline-string) variable. Each non empty character in the string corresponds to a square chunk of side length defined in `setupdata.py` (`STRIP_WIDTH`). If the player wants to define custom mazes, the `mazeimagegen.py` script is used to generate the background image of the new maze. The S and G characters in the maze are the start and goal positions respectively. Please note that there can be **only one** start position S.
+```
+        ################################
+        #          ,---Path sensors	 		  #
+        #          v                   #
+        #   X,-s1-s2-,X*               #
+        #    |       |                 #
+        #    |       |  Length         #
+        #    |       |                 #
+        #    |   O   |                 #
+        #   █|       |█                #
+        #   █|       |█                #
+        #   █|       |█                #
+        #    `-------'                 #
+        #      Width                   #
+        ################################
+```
 
 The mazes are made using https://asciiflow.com
 
 If you wish to make your own maze using characters available on your keyboard, you can do so by adding the characters into the `CHARSET` string in `setupdata.py` as comma separated values. By default, the `O` character also acts as a maze block.
 
 Note: In the simulation, 1mm = 1px
+
+Note: The `PATH_SENSOR_POS_RATIO` is the ratio of distance of a path sensor to its closer front corner to the distance of it from the farther front corner.	Here, (s1-X)/(X*-s1). Note that the ratio must always be less than 0.5
+
+Note: The `WHEEL_POS_RATIO` is the ratio of the distances of the wheel's centre from the front and back corners respectively. 
+
 Note: The examples given use multithreading to communicate with the sockets parallelly.
 
 ## Protocol
@@ -65,7 +86,7 @@ Data is exchanged as a string of signals with
 
 Each update to the motor drive signals is met with an acknowledgement,`MOTOR_INP_RECV_ACK`, from the server. Once the player closes the simulator window, the server waits for a client message and then sends back a `SIM_COMPLETE` message, closing the connection.
 
-In the sensor data channel, the client is required to send a `SENSOR_DATA_REQ` message to the server to fetch the sensor data. Under normal working conditions, the server will respond with the sensor data string. However, if the simulator has not been completely set up, the server responds with a `SENSOR_DATA_UNAVAIL` message. For each message received, the client is **required** to send an acknowledgement to the server. Similar to the motor drive inputs channel, once the simulator window is closed, the server waits for a message from the client, and then sends back `SIM_COMPLETE` message.
+In the sensor data channel, the client is required to send a `SENSOR_DATA_REQ` message to the server to fetch the sensor data. Under normal working conditions, the server will respond with the sensor data string. However, if the simulator has not been completely set up, the server responds with a `SENSOR_DATA_UNAVAIL` message. Similar to the motor drive inputs channel, once the simulator window is closed, the server waits for a message from the client, and then sends back `SIM_COMPLETE` message.
 
 Note: It is recommended that the player use the `SIM_COMPLETE` messages to detect the end of simulation instead of directly interacting with the simulator's files.
 

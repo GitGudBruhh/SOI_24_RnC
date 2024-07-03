@@ -59,7 +59,7 @@ def sensor_vals_reciever():
                 return
 
             #print(f"[PLYR] receiver(): Recieved {sensor_data}")
-            s.send("SENSOR_DATA_RECV_ACK".encode())
+            # s.send("SENSOR_DATA_RECV_ACK".encode())
             #print(f"[PLYR] receiver(): Sent SENSOR_DATA_RECV_ACK")
             
 def logic():
@@ -76,35 +76,24 @@ def logic():
             prev_sensor_data = sensor_data
             s_d_tup = sensor_data.decode().split(',')
             
-            print(s_d_tup)
-            
-            if(s_d_tup[1]  == '0' and s_d_tup[2]  == '1'):
+            if(len(s_d_tup) != 4):
+                pass
+            elif(s_d_tup[0]  == '1' and s_d_tup[3]  == '0'):
+                tmp = motor_drive_inputs
+                motor_drive_inputs = "255,0,1|88,1,0"
+                time.sleep(1.22222)
+                motor_drive_inputs = "255,0,1|255,1,0"
+            elif(s_d_tup[1]  == '0' and s_d_tup[2]  == '1'):
                 tmp = motor_drive_inputs
                 motor_drive_inputs = "100,0,1|105,1,0"
-                time.sleep(0.2)
+                time.sleep(0.5)
                 motor_drive_inputs = "255,0,1|255,1,0"
-            
-            if(s_d_tup[1]  == '1' and s_d_tup[2]  == '0'):
+            elif(s_d_tup[1]  == '1' and s_d_tup[2]  == '0'):
                 tmp = motor_drive_inputs
                 motor_drive_inputs = "105,0,1|100,1,0"
-                time.sleep(0.2)
+                time.sleep(0.5)
                 motor_drive_inputs = "255,0,1|255,1,0"
                 
-            # if(sensor_data == b'1,0,0,0'):
-            #     motor_drive_inputs = "255,0,1|88,1,0"
-            #     time.sleep(1.222222)
-            #     motor_drive_inputs = "100,0,1|100,1,0"
-            #     motor_drive_inputs = "100,0,1|0,0,0"
-            #     time.sleep(2.045)
-            #     motor_drive_inputs = "255,0,1|255,1,0"
-            # elif(sensor_data == b'0,1' or sensor_data == b'0,0'):
-            #     motor_drive_inputs = "10,0,1|10,1,0"
-            #     time.sleep(3.6)
-            #     motor_drive_inputs = "0,0,0|100,1,0"
-            #     time.sleep(2.045)
-            #     motor_drive_inputs = "255,0,1|255,1,0"
-            # elif(sensor_data == b'1,1'):
-            #     motor_drive_inputs = "255,0,1|255,1,0"
     
 
 t1 = threading.Thread(name='socket_worker_s',
