@@ -49,6 +49,6 @@ for j in range(len(maze_array)):
                              block_size)  # Draw goal state
 
 pygame.display.flip()
-pygame.image.save(screen, "map.png")
+pygame.image.save(screen, MAZE_FILE_NAME)
 
 pygame.quit()

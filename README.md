@@ -111,6 +111,15 @@ This bytes object is to be sent across the socket to the simulator, which will u
 >>> sim_socket.sendall(motor_drive_inp)
 ```
 
+Similarly, the recieved sensor values might look as follows:
+```
+>>> sensor_vals = conn.recv(32)
+>>> print(sensor_vals)
+b'1,1,1,0'
+```
+
+The middle two sensor values are path sensors, while the other two are the corner sensors used for turn logic.
+
 # Bugs? Need help?
 
 Open an issue on this repo or feel free to contact us at codingclub@iitdh.ac.in or 220010005@iitdh.ac.in
