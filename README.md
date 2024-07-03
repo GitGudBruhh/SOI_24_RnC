@@ -50,7 +50,7 @@ The `setupdata.py` file contains constants related to the robot's dimensions and
 The `mazemap.py` file contains the `maze` (multiline-string) variable. Each non empty character in the string corresponds to a square chunk of side length defined in `setupdata.py` (`STRIP_WIDTH`). If the player wants to define custom mazes, the `mazeimagegen.py` script is used to generate the background image of the new maze. The S and G characters in the maze are the start and goal positions respectively. Please note that there can be **only one** start position S.
 ```
         ################################
-        #          ,---Path sensors	 		  #
+        #          ,---Path sensors    #
         #          v                   #
         #   X,-s1-s2-,X*               #
         #    |       |                 #
