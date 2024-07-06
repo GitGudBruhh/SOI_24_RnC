@@ -77,23 +77,31 @@ def draw_robot(screen, robot_corners_on_screen, direction_unit_vec):
     screen.blit(setupdata.ROBOT_IMAGE, image_bounding_rect)
     
 def  draw_sensors(screen, sensor_colors, robot_corners_on_screen):
+    
+    # Drawing corner sensors
     pygame.draw.circle(
-        screen, sensor_colors[0], robot_corners_on_screen[0], 4)
+        screen, sensor_colors[0], robot_corners_on_screen[0], 3)
     pygame.draw.circle(
-        screen, (0,0,0), robot_corners_on_screen[0], 5, width=1)
+        screen, (0,0,0), robot_corners_on_screen[0], 4,width=1)
     
     pygame.draw.circle(
-        screen, sensor_colors[3], robot_corners_on_screen[1], 4)
+        screen, sensor_colors[4], robot_corners_on_screen[1], 3)
     pygame.draw.circle(
-        screen, (0,0,0), robot_corners_on_screen[1], 5, width=1)
+        screen, (0,0,0), robot_corners_on_screen[1], 4,width=1)
+    
+    # Drawing path sensors
+    pygame.draw.circle(
+        screen, sensor_colors[1], ( (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_POS_RATIO*robot_corners_on_screen[1]).astype(int) , 3)
+    pygame.draw.circle(
+        screen, (0,0,0), ( (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_POS_RATIO*robot_corners_on_screen[1]).astype(int), 4,width=1)
     
     pygame.draw.circle(
-        screen, sensor_colors[1], ( (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_POS_RATIO*robot_corners_on_screen[1]).astype(int) , 4)
+        screen, sensor_colors[3], ( PATH_SENSOR_POS_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[1]).astype(int) , 3)
     pygame.draw.circle(
-        screen, (0,0,0), ( (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[0] + PATH_SENSOR_POS_RATIO*robot_corners_on_screen[1]).astype(int), 5, width=1)
+        screen, (0,0,0), ( PATH_SENSOR_POS_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[1]).astype(int), 4,width=1)
     
     pygame.draw.circle(
-        screen, sensor_colors[2], ( PATH_SENSOR_POS_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[1]).astype(int) , 4)
+        screen, sensor_colors[2], ( 0.5*robot_corners_on_screen[0] + 0.5*robot_corners_on_screen[1]).astype(int) , 3)
     pygame.draw.circle(
-        screen, (0,0,0), ( PATH_SENSOR_POS_RATIO*robot_corners_on_screen[0] + (1 - PATH_SENSOR_POS_RATIO)*robot_corners_on_screen[1]).astype(int), 5, width=1)
+        screen, (0,0,0), ( 0.5*robot_corners_on_screen[0] + 0.5*robot_corners_on_screen[1]).astype(int), 4,width=1)
     

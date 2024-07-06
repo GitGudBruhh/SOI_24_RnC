@@ -7,7 +7,7 @@ from drawutils import *
 
 from setupdata import (
     SCREEN_WIDTH, SCREEN_HEIGHT, STRIP_WIDTH,
-    ROBOT_LENGTH, ROBOT_WIDTH,
+    ROBOT_LENGTH, ROBOT_WIDTH, INIT_ANGLE,
     MAZE_FILE_NAME)
 
 import setupdata
@@ -66,7 +66,7 @@ def begin_simulation():
     base_image = pygame.transform.scale(base_image, (ROBOT_WIDTH, ROBOT_LENGTH))
     
     setupdata.my_rob = Robot((ROBOT_LENGTH, ROBOT_WIDTH),
-                   STRIP_WIDTH*start_pos + offset_center_to_path, 0)
+                   STRIP_WIDTH*start_pos + offset_center_to_path, INIT_ANGLE)
     robot_motion = RobotMotion(setupdata.signal_list, (ROBOT_LENGTH, ROBOT_WIDTH))
     
     print("[SIM] Waiting for client to connect...")
@@ -147,15 +147,17 @@ def begin_simulation():
         #     pygame.draw.circle(
         #         setupdata.screen, (255, 0, 255), setupdata.my_rob.centre_of_rot - setupdata.my_rob.current_pos + screen_midpoint, 3)
 
-        sensor_colors = [(50, 50, 50), (50, 50, 50), (50, 50, 50), (50, 50, 50)]
+        sensor_colors = [(50, 50, 50), (50, 50, 50), (50, 50, 50), (50, 50, 50), (50, 50, 50)]
         if (setupdata.my_rob.sensor_vals[0] == 1):
             sensor_colors[0] = (255, 255, 0)
-        if (setupdata.my_rob.sensor_vals[3] == 1):
-            sensor_colors[3] = (255, 255, 0)
         if (setupdata.my_rob.sensor_vals[1] == 1):
             sensor_colors[1] = (255, 255, 0)
         if (setupdata.my_rob.sensor_vals[2] == 1):
             sensor_colors[2] = (255, 255, 0)
+        if (setupdata.my_rob.sensor_vals[3] == 1):
+            sensor_colors[3] = (255, 255, 0)
+        if (setupdata.my_rob.sensor_vals[4] == 1):
+            sensor_colors[4] = (255, 255, 0)
             
         draw_sensors(setupdata.screen, sensor_colors, robot_corners_on_screen)
 
@@ -168,16 +170,16 @@ def begin_simulation():
 
         pygame.display.set_caption(f'Current FPS: {str(clock.get_fps())}')
             
-        clock.tick(120)
+        clock.tick(60)
 
     pygame.quit()
     return
 
 t3 = threading.Thread(name='simulator', 
                       target=begin_simulation)
-t1 = threading.Thread(name='socket_worker_s',
+t1 = threading.Thread(name='motor_drive_inputs_receiver',
                       target=motor_drive_inputs_receiver)
-t2 = threading.Thread(name='socket_worker_r',
+t2 = threading.Thread(name='sensor_vals_sender',
                       target=sensor_vals_sender)
 
 t3.start()

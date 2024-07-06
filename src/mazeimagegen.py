@@ -11,6 +11,8 @@ for row in maze_array:
     if max_len < len(row):
         max_len = len(row)
 
+max_len = max_len + 10 # padding the right end just to be safe
+
 SCREEN_WIDTH = max_len * strip_width  # 1400
 SCREEN_HEIGHT = len(maze_array) * strip_width  # 780
 
