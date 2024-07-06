@@ -5,6 +5,8 @@ import time
 from setupdata import HOST, PORT1, PORT2
 
 # This is a test script used to check the functionality of the simulator
+# Very very unpredictable and does not give similar results across runs due to timing
+# issues commonly found in simulators. To avoid these, use a lower speed for the robot.
 
 poll_time = 0.001
 motor_drive_inputs = "255,0,1|253,1,0" # Set to add slight deviation in path and test path correction
@@ -106,29 +108,29 @@ def logic():
             if(len(sensor_values) != 5):
                 pass
             
-            # Rotate right
+                        # Rotate right
+            elif(sensor_values[0]  == '1' and sensor_values[4]  == '0'):
+                motor_drive_inputs = "127,0,1|44,1,0"
+                time.sleep(1.22222)
+                motor_drive_inputs = "127,0,1|127,1,0"
+                
+            # Rotate left
+            elif(sensor_values[0]  == '0' and sensor_values[4]  == '4'):
+                motor_drive_inputs = "44,0,1|127,1,0"
+                time.sleep(1.22222)
+                motor_drive_inputs = "127,0,1|127,1,0"
+                
             # Detect and correct path deviation (right)
             elif(sensor_values[1]  == '0' and sensor_values[3]  == '1'):
                 motor_drive_inputs = "100,0,1|105,1,0"
-                time.sleep(0.5)
-                motor_drive_inputs = "255,0,1|255,1,0"
+                time.sleep(0.2)
+                motor_drive_inputs = "127,0,1|127,1,0"
             
             # Detect and correct path deviation (left)
             elif(sensor_values[1]  == '1' and sensor_values[3]  == '0'):
                 motor_drive_inputs = "105,0,1|100,1,0"
-                time.sleep(0.5)
-                motor_drive_inputs = "255,0,1|255,1,0"
-                
-            elif(sensor_values[0]  == '1' and sensor_values[4]  == '0'):
-                motor_drive_inputs = "255,0,1|88,1,0"
-                time.sleep(1.22222*4)
-                motor_drive_inputs = "255,0,1|255,1,0"
-                
-            # Rotate left
-            elif(sensor_values[0]  == '0' and sensor_values[4]  == '4'):
-                motor_drive_inputs = "88,0,1|255,1,0"
-                time.sleep(1.22222*4)
-                motor_drive_inputs = "255,0,1|255,1,0"
+                time.sleep(0.2)
+                motor_drive_inputs = "127,0,1|127,1,0"
                 
     
 
