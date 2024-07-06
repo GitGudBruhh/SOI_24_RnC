@@ -78,8 +78,6 @@ def motor_drive_inputs_receiver():
                 elif LOGLEVEL[0] == 3:
                     print(f"[SIM] receiver(): Recieved {string_data}")
                     print(f"[SIM] receiver(): Sent MOTOR_INP_RECV_ACK")
-                
-                setupdata.func = 3
 
             conn.close()
         s.close()
@@ -149,8 +147,6 @@ def sensor_vals_sender():
                     elif LOGLEVEL[1] == 2:
                         print(f"[SIM] sender(): Recieved request {request}")
                         print(f"[SIM] sender(): Sent {current_data}")
-                    
-                    setupdata.func = 1
             
             conn.close()
         s.close()

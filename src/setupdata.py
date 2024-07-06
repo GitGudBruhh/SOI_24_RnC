@@ -4,16 +4,16 @@
 
 # CONSTANTS FOR CUSTOMIZING THE ROBOT AND MAZE
 
-MOTOR_MAX_RPM = 120 # in rpm, which is 120pi rad/min, which is 2pi rad/s, which corresponds to 15.7 cm/s
-WHEEL_RADIUS = 25 # in px, 2.5 in cm
+MOTOR_MAX_RPM = 120
+WHEEL_RADIUS = 35
 
-SCREEN_WIDTH = 800 #800
-SCREEN_HEIGHT = 600 #600
-STRIP_WIDTH =  10 # 1cm
+SCREEN_WIDTH = 800 # In px
+SCREEN_HEIGHT = 600 # In px
+STRIP_WIDTH =  10 # In px
 WHEEL_POS_RATIO = 0.7 # (Dist. to front)/Total length
-PATH_SENSOR_POS_RATIO = 0.35 # (Dist. to closest corner/ Total width) : MAXIMUM MUST BE 0.5
-ROBOT_WIDTH = 80 #8cm
-ROBOT_LENGTH = 120 #12cm
+PATH_SENSOR_POS_RATIO = 0.3 # (Dist. to closest corner/ Total width) : MAXIMUM MUST BE 0.5
+ROBOT_WIDTH = 80 # In px
+ROBOT_LENGTH = 120 # In px
 INIT_ANGLE = 0 # In radians
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
@@ -45,4 +45,4 @@ simulation_complete = False
 is_sender_active = False
 is_receiver_active = False
 ROBOT_IMAGE = None
-func = 1
+

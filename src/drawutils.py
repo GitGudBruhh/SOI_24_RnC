@@ -60,15 +60,15 @@ def draw_robot(screen, robot_corners_on_screen, direction_unit_vec):
 # Draw wheels
 # --------------------------------------------------------------------------------
     
-    left_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
+    left_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + direction_unit_vec * WHEEL_RADIUS + perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] + direction_unit_vec * WHEEL_RADIUS - perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - direction_unit_vec * WHEEL_RADIUS - perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[0] + WHEEL_POS_RATIO * robot_corners_on_screen[3] - direction_unit_vec * WHEEL_RADIUS + perp_dir * WHEEL_RADIUS/2,
                             ]
-    right_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - direction_unit_vec * WHEEL_RADIUS + perp_dir * 15,
-                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - direction_unit_vec * WHEEL_RADIUS - perp_dir * 15,
+    right_wheel_polygon = [(1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + direction_unit_vec * WHEEL_RADIUS - perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] + direction_unit_vec * WHEEL_RADIUS + perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - direction_unit_vec * WHEEL_RADIUS + perp_dir * WHEEL_RADIUS/2,
+                            (1 - WHEEL_POS_RATIO) * robot_corners_on_screen[1] + WHEEL_POS_RATIO * robot_corners_on_screen[2] - direction_unit_vec * WHEEL_RADIUS - perp_dir * WHEEL_RADIUS/2,
                             ]
     
     pygame.draw.polygon(screen, (0, 0, 0), left_wheel_polygon, width=0)
