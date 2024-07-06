@@ -102,9 +102,9 @@ maze = '''
 
   SOOOOOOOOOOOOOOOOOOOOOOOOOOO   
                              O   
-							 O   
-							 O   
-							 O   
+                             O   
+                             O   
+                             O   
 
 '''
 ```
