@@ -159,7 +159,7 @@ def begin_simulation():
         if (setupdata.my_rob.sensor_vals[4] == 1):
             sensor_colors[4] = (255, 255, 0)
             
-        draw_sensors(setupdata.screen, sensor_colors, robot_corners_on_screen)
+        draw_sensors(setupdata.screen, sensor_colors, robot_corners_on_screen, setupdata.my_rob.direction_unit_vec)
 
     # --------------------------------------------------------------------------------
     # 4.

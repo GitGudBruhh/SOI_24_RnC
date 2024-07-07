@@ -9,9 +9,10 @@ WHEEL_RADIUS = 25 # in px, 2.5 in cm
 
 SCREEN_WIDTH = 800 #800
 SCREEN_HEIGHT = 600 #600
-STRIP_WIDTH =  20 # in cm
+STRIP_WIDTH =  15 # in cm
 WHEEL_POS_RATIO = 0.7 # (Dist. to front)/Total length
 PATH_SENSOR_POS_RATIO = 0.35 # (Dist. to closest corner/ Total width) : MAXIMUM MUST BE 0.5
+PATH_SENSOR_FORWARD_OFFSET = 10 # How far away from robot body should path sensor be
 ROBOT_WIDTH = 80 #8cm
 ROBOT_LENGTH = 120 #12cm
 INIT_ANGLE = 0 # In radians

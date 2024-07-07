@@ -4,14 +4,15 @@
 
 # CONSTANTS FOR CUSTOMIZING THE ROBOT AND MAZE
 
-MOTOR_MAX_RPM = 120 # in rpm
+MOTOR_MAX_RPM = 120 # in rpm, which is 120pi rad/min, which is 2pi rad/s, which corresponds to 15.7 cm/s
 WHEEL_RADIUS = 25 # in px, 2.5 in cm
 
 SCREEN_WIDTH = 800 #800
 SCREEN_HEIGHT = 600 #600
-STRIP_WIDTH =  20 # in px
+STRIP_WIDTH =  15 # in cm
 WHEEL_POS_RATIO = 0.7 # (Dist. to front)/Total length
-PATH_SENSOR_POS_RATIO = 0.35 # (Dist. to closest corner/ Total width) : MUST BE <= 0.5
+PATH_SENSOR_POS_RATIO = 0.35 # (Dist. to closest corner/ Total width) : MAXIMUM MUST BE 0.5
+PATH_SENSOR_FORWARD_OFFSET = 10 # How far away from robot body should path sensor be
 ROBOT_WIDTH = 80 #8cm
 ROBOT_LENGTH = 120 #12cm
 INIT_ANGLE = 0 # In radians

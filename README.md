@@ -58,6 +58,7 @@ The `setupdata.py` file contains constants related to the robot's dimensions and
 
 - The `WHEEL_POS_RATIO` is the ratio between the distance of the wheel's centre from the front, and the length of the robot. Here, PX*/W.
 - The `PATH_SENSOR_POS_RATIO` is the ratio of distance of a path sensor to its closest front corner, and the width of the robot. Here, (s1-X)/W. Note that the ratio must always be less than 0.5
+- The `PATH_SENSOR_FORWARD_OFFSET` is the perpendicular distance from the path sensors to the robot body.
 - The robot's dimensions can be customized (length and width)
 - The line strip width can be customized if one wants to generate custom mazes.
 - The wheel's specifications (Motor's max RPM, wheel radius, acceleration, angular acceleration) can also be changed
@@ -68,7 +69,8 @@ The `setupdata.py` file contains constants related to the robot's dimensions and
         ################################
         #          ,---Path sensors    #
         #          v                   #
-        #   X,-s1-s2-,X*               #
+		#      s1 s2                   #
+        #   X,─┴───┴─,X*               #
         #    |       |                 #
         #    |       |  Length         #
         #    |       |                 #
@@ -76,7 +78,7 @@ The `setupdata.py` file contains constants related to the robot's dimensions and
         #   █|       |█                #
         #   █|       |█ P              #
         #   █|       |█                #
-        #    `-------'                 #
+        #    `───────'                 #
         #      Width                   #
         ################################
 ```
