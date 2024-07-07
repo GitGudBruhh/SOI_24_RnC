@@ -32,7 +32,7 @@ def begin_simulation():
     # Variable used to add to corner offsets array to get 4 corners array
     corners_on_screen_midpoint_base = np.array([screen_midpoint]*4)
     
-    time.sleep(1)
+    # time.sleep(1)
     
 # --------------------------------------------------------------------------------
 # Determine the start pos

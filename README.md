@@ -66,7 +66,7 @@ The `setupdata.py` file contains constants related to the robot's dimensions and
 
 ```
         ################################
-        #          ,---Path sensors	   #
+        #          ,---Path sensors    #
         #          v                   #
         #   X,-s1-s2-,X*               #
         #    |       |                 #
@@ -113,6 +113,8 @@ Running `python mazeimagegen.py` creates the background image `maze.png`.
 
 Then, running the simulator opens up a window with the custom maze.
 Be sure to give sufficient space padding in the left, right, top and bottom of the mazes to generate a background usable by the simulator.
+
+Note: You can use the `grid_creator.py` script to help you create a maze grid to edit.
 
 ## Communication Protocol
 Data is exchanged as a string of signals with

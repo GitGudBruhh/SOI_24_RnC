@@ -9,7 +9,7 @@ WHEEL_RADIUS = 25 # in px, 2.5 in cm
 
 SCREEN_WIDTH = 800 #800
 SCREEN_HEIGHT = 600 #600
-STRIP_WIDTH =  10 # 1cm
+STRIP_WIDTH =  20 # in cm
 WHEEL_POS_RATIO = 0.7 # (Dist. to front)/Total length
 PATH_SENSOR_POS_RATIO = 0.35 # (Dist. to closest corner/ Total width) : MAXIMUM MUST BE 0.5
 ROBOT_WIDTH = 80 #8cm

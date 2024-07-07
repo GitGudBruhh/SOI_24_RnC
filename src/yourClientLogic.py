@@ -9,7 +9,7 @@ from setupdata import HOST, PORT1, PORT2
 # issues commonly found in simulators. To avoid these, use a lower speed for the robot.
 
 poll_time = 0.001
-motor_drive_inputs = "255,0,1|253,1,0" # Set to add slight deviation in path and test path correction
+motor_drive_inputs = "100,0,1|100,1,0" # Set to add slight deviation in path and test path correction
 sensor_data = None
 SIM_RUNNING = None
 
