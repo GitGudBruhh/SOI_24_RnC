@@ -165,7 +165,8 @@ An example `yourLogicClient.py` is given in the `src/` directory for the player'
 
 # Bugs? Need help?
 
-Open an issue on this repo or feel free to contact us at codingclub@iitdh.ac.in, robotics@iitdh.ac.in, or 220010005@iitdh.ac.in
+Open an issue on this repo or feel free to contact us at codingclub@iitdh.ac.in or  robotics@iitdh.ac.in
+
 
 
 
